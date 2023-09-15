@@ -2,6 +2,7 @@
 
 <template>
   <main>
-   Ciao
+    <h1>Title</h1>
+   Ciao asd
   </main>
 </template>
