@@ -1,6 +1,7 @@
-@import "@styles/typo.scss";
+@import "@styles/themes";
+@import "@styles/typo";
 
 body {
-    font-family: 'DM Sans', sans-serif;
-    font-weight: normal;
+    background-color: var(--color-bg);
+    color: var(--color-main);
 }

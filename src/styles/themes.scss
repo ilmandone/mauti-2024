@@ -1,0 +1,13 @@
+@use "@styles/vars";
+
+:root {
+    --color-bg: #{vars.$color-l-bg};
+    --color-emphasize: #{vars.$color-l-emphasize};
+    --color-main: #{vars.$color-l-main};
+}
+
+body.t-dark {
+    --color-bg: #{vars.$color-d-bg};
+    --color-emphasize: #{vars.$color-d-emphasize};
+    --color-main: #{vars.$color-d-main};
+}
