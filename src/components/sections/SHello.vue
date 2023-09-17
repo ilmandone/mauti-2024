@@ -21,11 +21,12 @@
 
 @use "@styles/a11y";
 @use "@styles/typo";
+@use "@styles/utils";
 
 .hello {
-	width: 100vw;
 
-	padding-top: 40vh;
+	width: 100vw;
+	margin-top: 40vh;
 
 	&__text h1 {
 		@include a11y.visuallyHidden;
@@ -40,6 +41,18 @@
 		margin-left: 12vw;
 		padding: 1.3rem ;
 		@include typo.body(1.2em, #{var(--color-emphasize)});
+	}
+
+	@include utils.media('tl') {
+		margin-top: 25vh;
+		margin-left: 20vw;
+		width: 80vw;
+
+		&__sub {
+			font-size: 1.4rem;
+			margin-left: 12.5vw;
+			width: 67.5vw;
+		}
 	}
 }
 
