@@ -1,8 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang='ts'>
+import SHello from '@components/sections/SHello.vue'
+</script>
 
 <template>
   <main>
-    <h1>Title</h1>
-   Ciao asd
+    <SHello></SHello>
   </main>
 </template>

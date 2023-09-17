@@ -1,8 +1,11 @@
+@use "@styles/typo";
+
 @import "@styles/reset";
 @import "@styles/themes";
-@import "@styles/typo";
 
 body {
+    @include typo.body;
+
     background-color: var(--color-bg);
     color: var(--color-main);
 }

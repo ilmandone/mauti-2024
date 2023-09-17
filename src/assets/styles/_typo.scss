@@ -5,9 +5,16 @@ font-family: 'DM Sans', sans-serif;
 font-family: 'Gentium Plus', serif;
 */
 
-body {
+@mixin body {
     font-family: 'DM Sans', sans-serif;
     font-weight: normal;
     font-size: 1rem;
 }
 
+@mixin headers($size: 1rem, $color: var(--color-emphasize)) {
+    font-family: 'Gentium Plus', serif;
+    font-weight: normal;
+    font-size: $size;
+
+    color: $color;
+}
