@@ -3,35 +3,44 @@
 </script>
 
 <template>
-	<div class='hello'>
-		<div class='hello__picture' aria-hidden='true'>
-			<svg class='hello-svg' viewBox="0 0 1297.56 500.59">
-				<use xlink:href='/vectors/hello.svg#hello'></use>
-			</svg>
-		</div>
+	<header class='hello'>
+		<svg class='hello__svg' viewBox='0 0 1297.56 500.59'>
+			<use xlink:href='/vectors/hello.svg#hello'></use>
+		</svg>
+
 		<div class='hello__text'>
 			<h1>Hello</h1>
 		</div>
 
-	</div>
+		<p class='hello__sub'>I am a front end engineer with a deep love for UX/UI design and 3D</p>
+	</header>
 
-	<p>I am a front end engineer with a deep love for UX/UI design and 3D</p>
 </template>
 
-<style scoped lang='scss'>
+<style lang='scss' scoped>
 
-.hello{
+@use "@styles/a11y";
+@use "@styles/typo";
+
+.hello {
 	width: 100vw;
 
-	&__text h1 {
-		color: red;
-		visibility: hidden;
-		font-size: 0;
-	}
-}
+	padding-top: 40vh;
 
-.hello-svg {
-	fill: var(--color-emphasize);
+	&__text h1 {
+		@include a11y.visuallyHidden;
+	}
+
+	.hello__svg {
+		width: 100%;
+		fill: var(--color-emphasize);
+	}
+
+	&__sub {
+		margin-left: 12vw;
+		padding: 1.3rem ;
+		@include typo.body(1.2em, #{var(--color-emphasize)});
+	}
 }
 
 </style>
