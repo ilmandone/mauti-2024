@@ -78,18 +78,22 @@ section.wido {
 		&__single {
 			margin: 3rem 0;
 		}
+
+		p {
+			font-size: 1.25rem;
+		}
 	}
 
 	@include utils.media('tl') {
 		width: 70vw;
-		margin: 35vh 0 35vh 10vw;
+		margin: 35vh 20vw 35vh 10vw;
 
 		&__single {
 			margin: 5vw 0;
 		}
 
 		h2 {
-			font-size: 6vw;
+			font-size: 7vw;
 			line-height: 6vw;
 		}
 
@@ -101,6 +105,10 @@ section.wido {
 		p {
 			font-size: 1.5vw;
 		}
+	}
+
+	@include utils.media('dl') {
+		margin: 45vh 20vw 45vh 10vw;
 	}
 }
 
