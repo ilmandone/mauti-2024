@@ -19,6 +19,7 @@
 <style scoped lang='scss'>
 
 @use "@styles/a11y";
+@use "@styles/commons";
 @use "@styles/typo";
 @use "@styles/utils";
 
@@ -35,9 +36,7 @@ section {
 
 	.side-line {
 		font-size: 1.3rem;
-		padding-left: 2rem;
-
-		border-left: 2px solid var(--color-main);
+		@include commons.left-border;
 	}
 
 	@include utils.media('t') {
@@ -54,7 +53,6 @@ section {
 		}
 
 		.side-line {
-			padding-left: 3vw;
 			font-size: 1.70vw;
 		}
 	}

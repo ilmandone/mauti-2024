@@ -1,0 +1,10 @@
+@use "@styles/utils";
+
+@mixin left-border($color: var(--color-main)) {
+    padding-left: 2rem;
+    border-left: 2px solid $color;
+
+    @include utils.media('tl') {
+        padding-left: 3vw;
+    }
+}
