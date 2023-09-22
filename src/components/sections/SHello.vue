@@ -9,7 +9,7 @@
 			<use xlink:href='/vectors/hello.svg#hello'></use>
 		</svg>
 
-		<div class='hello__text'>
+		<div class='v-hidden'>
 			<h1>Hello</h1>
 		</div>
 
@@ -28,10 +28,6 @@
 
 	width: 100vw;
 	margin-top: 40vh;
-
-	&__text h1 {
-		@include a11y.visuallyHidden;
-	}
 
 	.hello__svg {
 		width: 100%;

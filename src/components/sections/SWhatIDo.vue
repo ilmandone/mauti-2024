@@ -4,7 +4,11 @@
 
 <template>
 	<section class='wido'>
-		<h2>What <br> I <br> Do</h2>
+
+		<header>
+			<h2>What <br> I <br> Do</h2>
+		</header>
+
 		<section class='wido__single'>
 
 			<h3>Front-end development</h3>

@@ -1,3 +1,4 @@
+@use "@styles/a11y";
 @use "@styles/typo";
 
 @import "@styles/reset";
@@ -8,4 +9,8 @@ body {
 
     background-color: var(--color-bg);
     color: var(--color-main);
+
+    .v-hidden {
+        @include a11y.visuallyHidden;
+    }
 }
