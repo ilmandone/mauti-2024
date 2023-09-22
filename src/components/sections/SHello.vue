@@ -39,8 +39,14 @@
 
 	&__sub {
 		margin-left: 12vw;
-		padding: 1.3rem ;
-		@include typo.body(1.2em, #{var(--color-emphasize)});
+		padding: 1.3rem;
+		@include typo.body(1.4rem, #{var(--color-emphasize)});
+	}
+
+	@include utils.media('t') {
+		&__sub {
+			margin-left: 16vw;
+		}
 	}
 
 	@include utils.media('tl') {
@@ -49,9 +55,18 @@
 		width: 80vw;
 
 		&__sub {
-			font-size: 1.4rem;
-			margin-left: 12.5vw;
-			width: 67.5vw;
+			margin-left: 17.130%;
+			width: auto;
+			font-size: 2.5vw;
+		}
+	}
+
+	@include utils.media('dl') {
+		margin-left: 30vw;
+		width: 70vw;
+
+		&__sub {
+			letter-spacing: 0.25rem;
 		}
 	}
 }
