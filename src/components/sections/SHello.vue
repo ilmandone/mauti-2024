@@ -3,6 +3,7 @@
 </script>
 
 <template>
+
 	<header class='hello'>
 		<svg class='hello__svg' viewBox='0 0 1297.56 500.59'>
 			<use xlink:href='/vectors/hello.svg#hello'></use>
@@ -40,7 +41,7 @@
 	&__sub {
 		margin-left: 12vw;
 		padding: 1.3rem;
-		@include typo.body(1.4rem, #{var(--color-emphasize)});
+		@include typo.body(1.6rem, #{var(--color-emphasize)});
 	}
 
 	@include utils.media('t') {
@@ -51,8 +52,8 @@
 
 	@include utils.media('tl') {
 		margin-top: 25vh;
-		margin-left: 20vw;
-		width: 80vw;
+		margin-left: 32vw;
+		width: 67vw;
 
 		&__sub {
 			margin-left: 17.130%;
@@ -62,11 +63,9 @@
 	}
 
 	@include utils.media('dl') {
-		margin-left: 30vw;
-		width: 70vw;
 
 		&__sub {
-			letter-spacing: 0.25rem;
+			letter-spacing: 0.1rem;
 		}
 	}
 }
