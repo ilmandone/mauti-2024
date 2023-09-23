@@ -57,9 +57,10 @@ section.wido {
 	}
 
 	h2 {
-		@include typo.headers(5.5rem);
+		@include typo.headers(6.5rem);
 		font-weight: 700;
 		line-height: 5.5rem;
+		letter-spacing: -0.25rem;
 	}
 
 	h3 {
@@ -93,8 +94,9 @@ section.wido {
 		}
 
 		h2 {
-			font-size: 7vw;
-			line-height: 6vw;
+			font-size: 9vw;
+			line-height: 7vw;
+			letter-spacing: -0.5vw;
 		}
 
 		h3 {
