@@ -74,7 +74,6 @@ section.wido {
 
 	p {
 		font-size: 1.25rem;
-
 	}
 
 	@include utils.media('t') {
@@ -82,10 +81,6 @@ section.wido {
 
 		&__single {
 			margin: 3rem 0;
-		}
-
-		p {
-			font-size: 1.25rem;
 		}
 	}
 
@@ -108,7 +103,7 @@ section.wido {
 		}
 
 		p {
-			font-size: 1.5vw;
+			font-size: 1.4vw;
 		}
 	}
 
