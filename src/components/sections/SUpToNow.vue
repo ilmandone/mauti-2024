@@ -20,17 +20,30 @@
 
 				<ul>
 					<li>
-						Today <br>
-						Front-end architect <br>
-						Var Group
+						<span class='period'>Today</span> <br>
+						<span class='v-hidden'>Role:</span> <strong>Front-end software architect</strong> <br>
+						<span class='v-hidden'>Company:</span> Var Group
 					</li>
 					<li>
-						2018 - 2023 <br>
-						Senior Front End Developer br
-						YNAP
+						<span class='period'>2018 - 2021</span> <br>
+						<span class='v-hidden'>Role:</span> <strong>Senior Front End Developer</strong> <br>
+						<span class='v-hidden'>Company:</span>YNAP
 					</li>
-					<li>asdasd</li>
-					<li>asdad</li>
+					<li>
+						<span class='period'>2015 - 2018</span> <br>
+						<span class='v-hidden'>Role:</span> <strong>Digital art director / UX designer</strong> <br>
+						<span class='v-hidden'>Company:</span>Life Longari Loman
+					</li>
+					<li>
+						<span class='period'>2013 - 2015</span> <br>
+						<span class='v-hidden'>Role:</span> <strong>UX / UI designer</strong> <br>
+						<span class='v-hidden'>Company:</span>Neri Wolff - Quadrante
+					</li>
+					<li>
+						<span class='period'>2011 - 2013</span> <br>
+						<span class='v-hidden'>Role:</span> <strong>UX / UI designer - Front-end developer</strong> <br>
+						<span class='v-hidden'>Company:</span>Net Synergy
+					</li>
 				</ul>
 			</section>
 
@@ -64,7 +77,6 @@
 
 <style lang='scss' scoped>
 
-@use "@styles/a11y";
 @use "@styles/typo";
 @use "@styles/utils";
 
@@ -109,6 +121,10 @@ section.utn {
 			li.mb {
 				margin-bottom: 1.5rem;
 			}
+
+			.period {
+				font-size: 1rem;
+			}
 		}
 	}
 
@@ -121,7 +137,7 @@ section.utn {
 	@include utils.media('tl') {
 		.contents {
 			flex-direction: row;
-			margin: 10vw 20vw 8rem 10vw;
+			margin: 10vw 10vw 8rem 10vw;
 		}
 
 		.contents > section {
@@ -139,6 +155,10 @@ section.utn {
 
 				li.mb {
 					margin-bottom: 1.5vw;
+				}
+
+				.period {
+					font-size: 1.2vw;
 				}
 			}
 		}
