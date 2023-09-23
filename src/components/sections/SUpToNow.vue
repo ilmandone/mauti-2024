@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script lang='ts' setup>
 
 </script>
 
@@ -11,26 +11,34 @@
 			</svg>
 		</header>
 
-		<div class='d-list'>
-			<ul>
-				<li>
-					Today <br>
-					Front-end architect <br>
-					Var Group
-				</li>
-				<li>
-					2018 - 2023 <br>
-					Senior Front End Developer br
-					YNAP
-				</li>
-				<li>asdasd</li>
-				<li>asdad</li>
-			</ul>
+		<div class='contents'>
+
+			<section>
+				<header class='v-hidden'>
+					<h3> My Career</h3>
+				</header>
+
+				<ul>
+					<li>
+						Today <br>
+						Front-end architect <br>
+						Var Group
+					</li>
+					<li>
+						2018 - 2023 <br>
+						Senior Front End Developer br
+						YNAP
+					</li>
+					<li>asdasd</li>
+					<li>asdad</li>
+				</ul>
+			</section>
 
 			<section>
 				<header>
 					<h3>Skills and tools</h3>
 				</header>
+
 				<ul>
 					<li>Javascript</li>
 					<li>Typescript</li>
@@ -38,10 +46,11 @@
 					<li>Python</li>
 					<li>Node JS</li>
 					<li>HTML</li>
-					<li>CSS / SCSS / SASS</li>
+					<li class='mb'>CSS / SCSS / SASS</li>
+
 					<li>Angular / React / Vue and more</li>
 					<li>GitHub / Bitbucket</li>
-					<li>Atlassian’s tools suite</li>
+					<li class='mb'>Atlassian’s tools suite</li>
 
 					<li>Full proficient in Agile / Scrum methodology</li>
 				</ul>
@@ -53,7 +62,7 @@
 
 </template>
 
-<style scoped lang='scss'>
+<style lang='scss' scoped>
 
 @use "@styles/a11y";
 @use "@styles/typo";
@@ -71,38 +80,68 @@ section.utn {
 		fill: var(--color-emphasize);
 	}
 
-	.d-list {
+	.contents {
 		margin: 4rem 2rem;
-		background-color: #f0f;
 
 		display: flex;
 		flex-direction: column;
+	}
 
-		> * {
-			flex: 1;
+	.contents > section {
+		flex: 1;
+		margin: 1rem 0;
+
+		header:not(.v-hidden) {
+			margin-bottom: 1rem;
+			@include typo.body(1.5rem, var(--color-emphasize));
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+
+			font-size: 1.25rem;
+
+			li {
+				margin-bottom: 0.5rem;
+			}
+
+			li.mb {
+				margin-bottom: 1.5rem;
+			}
 		}
 	}
 
 	@include utils.media('t') {
-		margin: 35vh 0;
-
-		.d-list {
-			margin: 6rem 8rem;
+		.contents {
+			margin: 5rem 8rem;
 		}
 	}
 
 	@include utils.media('tl') {
-
-		.d-list {
-			margin: 10vw;
-			width: 80vw;
-
+		.contents {
 			flex-direction: row;
+			margin: 10vw 20vw 8rem 10vw;
 		}
-	}
 
-	@include utils.media('dl') {
-		margin: 45vh 0;
+		.contents > section {
+
+			header:not(.v-hidden) {
+				font-size: 1.65vw;
+			}
+
+			ul {
+				font-size: 1.4vw;
+
+				li {
+					margin-bottom: 0.5vw;
+				}
+
+				li.mb {
+					margin-bottom: 1.5vw;
+				}
+			}
+		}
 	}
 }
 
