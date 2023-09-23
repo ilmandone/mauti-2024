@@ -6,7 +6,7 @@
 	<section class='utn'>
 		<header class='utn__header'>
 			<h2 class='v-hidden'>Up to now</h2>
-			<svg class='utn__svg' viewBox='0 0 1916 264'>
+			<svg class='utn__svg' viewBox='0 0 1581 354'>
 				<use xlink:href='/vectors/up-to-now.svg#utn'></use>
 			</svg>
 		</header>
