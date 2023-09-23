@@ -72,6 +72,11 @@ section.wido {
 		text-transform: uppercase;
 	}
 
+	p {
+		font-size: 1.25rem;
+
+	}
+
 	@include utils.media('t') {
 		margin: 35vh 8rem;
 
