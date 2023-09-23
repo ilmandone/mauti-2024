@@ -67,7 +67,7 @@ section.wido {
 		margin: 2.5rem 0;
 		@include commons.left-border($color: var(--color-emphasize));
 
-		@include typo.headers(1.75rem);
+		@include typo.body(1.75rem, var(--color-emphasize));
 		font-weight: 700;
 		line-height: 2rem;
 		text-transform: uppercase;
@@ -101,7 +101,8 @@ section.wido {
 
 		h3 {
 			margin: 5vw 0;
-			font-size: 2.5vw;
+			font-size: 2.15vw;
+			letter-spacing: 0.125vw;
 		}
 
 		p {
