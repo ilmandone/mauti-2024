@@ -61,7 +61,7 @@
 	}
 
 	header {
-		width: 70vw;
+		width: 50vw;
 	}
 
 	&__svg {
