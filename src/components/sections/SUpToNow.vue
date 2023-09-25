@@ -19,27 +19,27 @@
 				</header>
 
 				<ul>
-					<li>
+					<li class='mb'>
 						<span class='period'>Today</span> <br>
 						<span class='v-hidden'>Role:</span> <strong>Front-end software architect</strong> <br>
 						<span class='v-hidden'>Company:</span> Var Group
 					</li>
-					<li>
+					<li class='mb'>
 						<span class='period'>2018 - 2021</span> <br>
 						<span class='v-hidden'>Role:</span> <strong>Senior Front End Developer</strong> <br>
 						<span class='v-hidden'>Company:</span>YNAP
 					</li>
-					<li>
+					<li class='mb'>
 						<span class='period'>2015 - 2018</span> <br>
 						<span class='v-hidden'>Role:</span> <strong>Digital art director / UX designer</strong> <br>
 						<span class='v-hidden'>Company:</span>Life Longari Loman
 					</li>
-					<li>
+					<li class='mb'>
 						<span class='period'>2013 - 2015</span> <br>
 						<span class='v-hidden'>Role:</span> <strong>UX / UI designer</strong> <br>
 						<span class='v-hidden'>Company:</span>Neri Wolff - Quadrante
 					</li>
-					<li>
+					<li class='mb'>
 						<span class='period'>2011 - 2013</span> <br>
 						<span class='v-hidden'>Role:</span> <strong>UX / UI designer - Front-end developer</strong> <br>
 						<span class='v-hidden'>Company:</span>Net Synergy
@@ -124,6 +124,7 @@ section.utn {
 
 			.period {
 				font-size: 1rem;
+				line-height: 1.8rem;
 			}
 		}
 	}
@@ -159,6 +160,7 @@ section.utn {
 
 				.period {
 					font-size: 1.2vw;
+					line-height: 2vw;
 				}
 			}
 		}
