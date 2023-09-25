@@ -45,10 +45,12 @@ section {
 	}
 
 	@include utils.media('t') {
-		margin: 35vh 20vw 35vh 10vw;
+		margin: 35vh 8rem;
 	}
 
 	@include utils.media('tl') {
+		margin: 35vh 20vw 35vh 10vw;
+
 		.contents {
 			flex-direction: row;
 
