@@ -31,16 +31,45 @@ section {
 		a {
 			@include typo.body();
 			font-size: 1.25rem;
+			margin-bottom: 1rem;
 		}
 
 		& > a:first-child {
-			margin-bottom: 2rem;
+			margin-bottom: 3rem;
 		}
 
 		.social {
 			display: flex;
 			flex-direction: column;
 		}
+	}
+
+	@include utils.media('t') {
+		margin: 35vh 20vw 35vh 10vw;
+	}
+
+	@include utils.media('tl') {
+		.contents {
+			flex-direction: row;
+
+			> * {
+				flex: 1;
+			}
+
+			a {
+				font-size: 1.4vw;
+			}
+
+			.social {
+				flex-direction: row;
+				justify-content: space-between;
+			}
+
+		}
+	}
+
+	@include utils.media('dl') {
+		margin: 45vh 20vw 45vh 10vw;
 	}
 }
 
