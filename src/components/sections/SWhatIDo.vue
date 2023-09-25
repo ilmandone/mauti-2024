@@ -6,7 +6,11 @@
 	<section class='wido'>
 
 		<header>
-			<h2>What <br> I <br> Do</h2>
+			<h2 class='v-hidden'>What <br> I <br> Do</h2>
+
+			<svg class='wido__svg' viewBox='0 0 674 695'>
+				<use xlink:href='/vectors/what-i-do.svg#wid'></use>
+			</svg>
 		</header>
 
 		<section class='wido__single'>
@@ -49,18 +53,20 @@
 @use "@styles/typo";
 @use "@styles/utils";
 
-section.wido {
+.wido {
 	margin: 30vh 2rem;
 
 	&__single {
 		margin: 2rem 0;
 	}
 
-	h2 {
-		@include typo.headers(6.5rem);
-		font-weight: 700;
-		line-height: 5.5rem;
-		letter-spacing: -0.25rem;
+	header {
+		width: 70vw;
+	}
+
+	&__svg {
+		height: 100%;
+		fill: var(--color-emphasize);
 	}
 
 	h3 {
@@ -80,6 +86,10 @@ section.wido {
 	@include utils.media('t') {
 		margin: 35vh 8rem;
 
+		header {
+			width: 28vw;
+		}
+
 		&__single {
 			margin: 3rem 0;
 		}
@@ -91,12 +101,6 @@ section.wido {
 
 		&__single {
 			margin: 5vw 0;
-		}
-
-		h2 {
-			font-size: 9vw;
-			line-height: 7vw;
-			letter-spacing: -0.5vw;
 		}
 
 		h3 {
