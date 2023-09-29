@@ -15,28 +15,37 @@ type ScrollDirective = Directive & {
 export const ScrollDetectDirective: ScrollDirective = {
 
 	isTouch: false,
-	cbFn(v: number) {
-	},
+	cbFn() {},
 
 	startY: 0,
+
+	//#region Mouse
 
 	onWheel(e) {
 		ScrollDetectDirective.cbFn(e.deltaY)
 	},
 
+	//#endregion
+
+	//#region Pointer
+
 	onPointerDown(e) {
+		ScrollDetectDirective.startY = e.clientY
 		window.addEventListener('pointerup', ScrollDetectDirective.onPointerUp)
 		window.addEventListener('pointermove', ScrollDetectDirective.onPointerMove)
 	},
 
 	onPointerMove(e) {
-		ScrollDetectDirective.cbFn(ScrollDetectDirective.startY - e.clientY)
+		const val = (ScrollDetectDirective.startY - e.clientY)
+		ScrollDetectDirective.cbFn(val)
 	},
 
-	onPointerUp(e) {
+	onPointerUp() {
 		window.removeEventListener('pointerup', ScrollDetectDirective.onPointerUp)
 		window.removeEventListener('pointermove', ScrollDetectDirective.onPointerMove)
 	},
+
+	//#endregion
 
 	created(el: HTMLElement, binding) {
 
@@ -47,15 +56,15 @@ export const ScrollDetectDirective: ScrollDirective = {
 		ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window
 	},
 
-	mounted(el: HTMLElement) {
-		if (!ScrollDetectDirective.isTouch)
+	mounted() {
+		if (ScrollDetectDirective.isTouch)
 			window.addEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
 
 		window.addEventListener('wheel', ScrollDetectDirective.onWheel)
 	},
 
-	unmounted(el: HTMLElement) {
-		if (!ScrollDetectDirective.isTouch)
+	unmounted() {
+		if (ScrollDetectDirective.isTouch)
 			window.removeEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
 
 		window.removeEventListener('wheel', ScrollDetectDirective.onWheel)
