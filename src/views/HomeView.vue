@@ -1,28 +1,24 @@
 <script lang='ts' setup>
-import SHello from '@components/sections/SHello.vue'
-import SBrief from '@components/sections/SBrief.vue'
-import SWhatIDo from '@components/sections/SWhatIDo.vue'
-import SUpToNow from '@components/sections/SUpToNow.vue'
-import SContacts from '@components/sections/SContacts.vue'
-
-import {ScrollDetectDirective} from '@directives/scroll-detect.directive'
-
-const vScrollDetect = ScrollDetectDirective
+import SHello from '@components/sections/S-Hello.vue'
+import SBrief from '@components/sections/S-Brief.vue'
+import SWhatIDo from '@components/sections/S-WhatIDo.vue'
+import SUpToNow from '@components/sections/S-UpToNow.vue'
+import SContacts from '@components/sections/S-Contacts.vue'
+import UIScrollLoop from '@components/ui/UI-ScrollLoop.vue'
 </script>
 
 <template>
-	<main v-scroll-detect>
+
+	<UIScrollLoop>
 		<SHello />
 		<SBrief />
 		<SWhatIDo />
 		<SUpToNow />
 		<SContacts />
-	</main>
+	</UIScrollLoop>
+
 </template>
 
-<style scoped lang='scss'>
-main {
-	overflow: hidden;
-	height: 100vh;
-}
+<style lang='scss' scoped>
+
 </style>
