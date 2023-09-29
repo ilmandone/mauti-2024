@@ -4,18 +4,15 @@ import SBrief from '@components/sections/S-Brief.vue'
 import SWhatIDo from '@components/sections/S-WhatIDo.vue'
 import SUpToNow from '@components/sections/S-UpToNow.vue'
 import SContacts from '@components/sections/S-Contacts.vue'
-import UIScrollLoop from '@components/ui/UI-ScrollLoop.vue'
 </script>
 
 <template>
 
-	<UIScrollLoop>
-		<SHello />
-		<SBrief />
-		<SWhatIDo />
-		<SUpToNow />
-		<SContacts />
-	</UIScrollLoop>
+	<SHello />
+	<SBrief />
+	<SWhatIDo />
+	<SUpToNow />
+	<SContacts />
 
 </template>
 
