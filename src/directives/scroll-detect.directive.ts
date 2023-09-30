@@ -71,7 +71,7 @@ export const ScrollDetectDirective: ScrollDirective = {
 
         ScrollDetectDirective.cbFn(val)
     },
-    onActionUp(e) {
+    onActionUp() {
         ScrollDetectDirective.cbFn(ScrollDetectDirective.acceleration * 3)
         ScrollDetectDirective.acceleration = 0
 
