@@ -32,6 +32,6 @@ main {
     left: 0;
     width: 100%;
 
-    transition: transform 700ms cubic-bezier(0.02, 1.34, 0.65, 0.99);
+    transition: transform 700ms cubic-bezier(0, 0.89, 0.41, 1.02);
 }
 </style>
