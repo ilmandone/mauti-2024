@@ -1,10 +1,11 @@
 import type { Directive } from 'vue'
 
 type ScrollDirective = Directive & {
+    acceleration: number
     isTouch: boolean
-    cbFn: (v: number) => void
-
     startY: number
+
+    cbFn: (v: number) => void
 
     onActionDown: (e: PointerEvent | TouchEvent) => void
     onActionUp: (e: PointerEvent | TouchEvent) => void
@@ -16,9 +17,11 @@ type ScrollDirective = Directive & {
 }
 
 export const ScrollDetectDirective: ScrollDirective = {
+    acceleration: 0,
     isTouch: false,
-    cbFn() {},
     startY: 0,
+
+    cbFn() {},
 
     //#region Mouse
 
@@ -54,14 +57,20 @@ export const ScrollDetectDirective: ScrollDirective = {
     onActionMove(e) {
         let val = 0
         if (ScrollDetectDirective.isTouch) {
-            val = (ScrollDetectDirective.startY - (e as TouchEvent).targetTouches[0].clientY) / 8
+            const posY = (e as TouchEvent).targetTouches[0].clientY
+            const direction = posY > ScrollDetectDirective.startY ? -1 : 1
+            val = (window.innerHeight / 30) * direction
+            ScrollDetectDirective.acceleration = ScrollDetectDirective.startY - posY
+            ScrollDetectDirective.startY = posY
         } else {
             val = (e as PointerEvent).clientY - ScrollDetectDirective.startY
         }
 
         ScrollDetectDirective.cbFn(val)
     },
-    onActionUp() {
+    onActionUp(e) {
+        ScrollDetectDirective.cbFn(ScrollDetectDirective.acceleration * 3)
+
         window.removeEventListener(
             ScrollDetectDirective.isTouch ? 'touchmove' : 'pointermove',
             ScrollDetectDirective.onActionMove
