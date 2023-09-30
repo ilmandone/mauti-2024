@@ -6,16 +6,18 @@ type ScrollDirective = Directive & {
 
     startY: number
 
-    onPointerDown: (e: PointerEvent | TouchEvent) => void
-    onPointerUp: (e: PointerEvent | TouchEvent) => void
-    onPointerMove: (e: PointerEvent | TouchEvent) => void
+    onActionDown: (e: PointerEvent | TouchEvent) => void
+    onActionUp: (e: PointerEvent | TouchEvent) => void
+    onActionMove: (e: PointerEvent | TouchEvent) => void
+
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
     onWheel: (e: WheelEvent) => void
 }
 
 export const ScrollDetectDirective: ScrollDirective = {
     isTouch: false,
     cbFn() {},
-
     startY: 0,
 
     //#region Mouse
@@ -26,45 +28,50 @@ export const ScrollDetectDirective: ScrollDirective = {
 
     //#endregion
 
+    //#region
+    // TODO: add scroll with key down and up
+    onKeyDown(e: KeyboardEvent) {},
+    onKeyUp(e: KeyboardEvent) {},
+
+    //#endregion
+
     //#region Pointer
 
-    onPointerDown(e: PointerEvent | TouchEvent) {
-        ScrollDetectDirective.startY =
-            e.type === 'touchstart' ? (e as TouchEvent).targetTouches[0].clientY : (e as PointerEvent).clientY
+    onActionDown(e: PointerEvent | TouchEvent) {
+        ScrollDetectDirective.startY = ScrollDetectDirective.isTouch
+            ? (e as TouchEvent).targetTouches[0].clientY
+            : (e as PointerEvent).clientY
 
         window.addEventListener(
-            navigator.maxTouchPoints > 0 ? 'touchmove' : 'pointermove',
-            ScrollDetectDirective.onPointerMove
+            ScrollDetectDirective.isTouch ? 'touchmove' : 'pointermove',
+            ScrollDetectDirective.onActionMove
         )
         window.addEventListener(
-            navigator.maxTouchPoints > 0 ? 'touchend' : 'pointerup',
-            ScrollDetectDirective.onPointerUp
+            ScrollDetectDirective.isTouch ? 'touchend' : 'pointerup',
+            ScrollDetectDirective.onActionUp
         )
     },
-
-    onPointerMove(e) {
+    onActionMove(e) {
         let val = 0
-        if (e.type === 'touchmove') {
-            val = (ScrollDetectDirective.startY - (e as TouchEvent).targetTouches[0].clientY) / 10
+        if (ScrollDetectDirective.isTouch) {
+            val = (ScrollDetectDirective.startY - (e as TouchEvent).targetTouches[0].clientY) / 8
         } else {
             val = (e as PointerEvent).clientY - ScrollDetectDirective.startY
         }
 
         ScrollDetectDirective.cbFn(val)
     },
-
-    onPointerUp() {
+    onActionUp() {
         window.removeEventListener(
-            navigator.maxTouchPoints > 0 ? 'touchmove' : 'pointermove',
-            ScrollDetectDirective.onPointerMove
+            ScrollDetectDirective.isTouch ? 'touchmove' : 'pointermove',
+            ScrollDetectDirective.onActionMove
         )
 
         window.removeEventListener(
-            navigator.maxTouchPoints > 0 ? 'touchend' : 'pointerup',
-            ScrollDetectDirective.onPointerUp
+            ScrollDetectDirective.isTouch ? 'touchend' : 'pointerup',
+            ScrollDetectDirective.onActionUp
         )
     },
-
     //#endregion
 
     created(el: HTMLElement, binding) {
@@ -74,19 +81,17 @@ export const ScrollDetectDirective: ScrollDirective = {
         // Detect touch device
         ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window
     },
-
     mounted() {
         window.addEventListener(
-            navigator.maxTouchPoints > 0 ? 'touchstart' : 'pointerdown',
-            ScrollDetectDirective.onPointerDown
+            ScrollDetectDirective.isTouch ? 'touchstart' : 'pointerdown',
+            ScrollDetectDirective.onActionDown
         )
 
         window.addEventListener('wheel', ScrollDetectDirective.onWheel)
     },
-
     unmounted() {
         // if (ScrollDetectDirective.isTouch)
-        window.removeEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
+        window.removeEventListener('pointerdown', ScrollDetectDirective.onActionDown)
 
         window.removeEventListener('wheel', ScrollDetectDirective.onWheel)
     }

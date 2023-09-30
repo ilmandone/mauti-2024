@@ -31,5 +31,7 @@ main {
     top: 0;
     left: 0;
     width: 100%;
+
+    transition: transform 250ms ease-out;
 }
 </style>
