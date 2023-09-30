@@ -89,11 +89,8 @@ export const ScrollDetectDirective: ScrollDirective = {
     },
     mounted() {
         window.addEventListener('touchstart', ScrollDetectDirective.onActionDown)
-
-        if (!ScrollDetectDirective.isTouch) {
-            window.addEventListener('wheel', ScrollDetectDirective.onWheel)
-            window.addEventListener('keydown', ScrollDetectDirective.onActionKey)
-        }
+        window.addEventListener('wheel', ScrollDetectDirective.onWheel)
+        window.addEventListener('keydown', ScrollDetectDirective.onActionKey)
     },
     unmounted() {
         window.removeEventListener('touchstart', ScrollDetectDirective.onActionDown)
