@@ -38,3 +38,12 @@ $depth: (
         z-index: #{map-get($depth, $value)};
     }
 }
+
+// Sizes
+
+@mixin fullscreenFixed() {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}

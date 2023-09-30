@@ -1,72 +1,93 @@
 import type { Directive } from 'vue'
 
 type ScrollDirective = Directive & {
-	isTouch: boolean
-	cbFn: (v: number) => void
+    isTouch: boolean
+    cbFn: (v: number) => void
 
-	startY: number
+    startY: number
 
-	onPointerDown: (e: PointerEvent) => void
-	onPointerUp: (e: PointerEvent) => void
-	onPointerMove: (e: PointerEvent) => void
-	onWheel: (e: WheelEvent) => void
+    onPointerDown: (e: PointerEvent | TouchEvent) => void
+    onPointerUp: (e: PointerEvent | TouchEvent) => void
+    onPointerMove: (e: PointerEvent | TouchEvent) => void
+    onWheel: (e: WheelEvent) => void
 }
 
 export const ScrollDetectDirective: ScrollDirective = {
+    isTouch: false,
+    cbFn() {},
 
-	isTouch: false,
-	cbFn() {},
+    startY: 0,
 
-	startY: 0,
+    //#region Mouse
 
-	//#region Mouse
+    onWheel(e) {
+        ScrollDetectDirective.cbFn(e.deltaY)
+    },
 
-	onWheel(e) {
-		ScrollDetectDirective.cbFn(e.deltaY)
-	},
+    //#endregion
 
-	//#endregion
+    //#region Pointer
 
-	//#region Pointer
+    onPointerDown(e: PointerEvent | TouchEvent) {
+        ScrollDetectDirective.startY =
+            e.type === 'touchstart' ? (e as TouchEvent).targetTouches[0].clientY : (e as PointerEvent).clientY
 
-	onPointerDown(e) {
-		ScrollDetectDirective.startY = e.clientY
-		window.addEventListener('pointerup', ScrollDetectDirective.onPointerUp)
-		window.addEventListener('pointermove', ScrollDetectDirective.onPointerMove)
-	},
+        window.addEventListener(
+            navigator.maxTouchPoints > 0 ? 'touchmove' : 'pointermove',
+            ScrollDetectDirective.onPointerMove
+        )
+        window.addEventListener(
+            navigator.maxTouchPoints > 0 ? 'touchend' : 'pointerup',
+            ScrollDetectDirective.onPointerUp
+        )
+    },
 
-	onPointerMove(e) {
-		const val = (ScrollDetectDirective.startY - e.clientY)
-		ScrollDetectDirective.cbFn(val)
-	},
+    onPointerMove(e) {
+        let val = 0
+        if (e.type === 'touchmove') {
+            val = (ScrollDetectDirective.startY - (e as TouchEvent).targetTouches[0].clientY) / 10
+        } else {
+            val = (e as PointerEvent).clientY - ScrollDetectDirective.startY
+        }
 
-	onPointerUp() {
-		window.removeEventListener('pointerup', ScrollDetectDirective.onPointerUp)
-		window.removeEventListener('pointermove', ScrollDetectDirective.onPointerMove)
-	},
+        ScrollDetectDirective.cbFn(val)
+    },
 
-	//#endregion
+    onPointerUp() {
+        window.removeEventListener(
+            navigator.maxTouchPoints > 0 ? 'touchmove' : 'pointermove',
+            ScrollDetectDirective.onPointerMove
+        )
 
-	created(el: HTMLElement, binding) {
+        window.removeEventListener(
+            navigator.maxTouchPoints > 0 ? 'touchend' : 'pointerup',
+            ScrollDetectDirective.onPointerUp
+        )
+    },
 
-		// Register the cb function
-		ScrollDetectDirective.cbFn = binding.value.cbFn
+    //#endregion
 
-		// Detect touch device
-		ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window
-	},
+    created(el: HTMLElement, binding) {
+        // Register the cb function
+        ScrollDetectDirective.cbFn = binding.value.cbFn
 
-	mounted() {
-		if (ScrollDetectDirective.isTouch)
-			window.addEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
+        // Detect touch device
+        ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window
+    },
 
-		window.addEventListener('wheel', ScrollDetectDirective.onWheel)
-	},
+    mounted() {
+        window.addEventListener(
+            navigator.maxTouchPoints > 0 ? 'touchstart' : 'pointerdown',
+            ScrollDetectDirective.onPointerDown
+        )
 
-	unmounted() {
-		if (ScrollDetectDirective.isTouch)
-			window.removeEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
+        window.addEventListener('wheel', ScrollDetectDirective.onWheel)
+    },
 
-		window.removeEventListener('wheel', ScrollDetectDirective.onWheel)
-	}
+    unmounted() {
+        // if (ScrollDetectDirective.isTouch)
+        window.removeEventListener('pointerdown', ScrollDetectDirective.onPointerDown)
+
+        window.removeEventListener('wheel', ScrollDetectDirective.onWheel)
+    }
 }

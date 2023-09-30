@@ -1,8 +1,13 @@
 @use "@styles/a11y";
+@use "@styles/utils";
 @use "@styles/typo";
 
 @import "@styles/reset";
 @import "@styles/themes";
+
+html {
+    @include utils.fullscreenFixed
+}
 
 body {
     @include typo.body;
