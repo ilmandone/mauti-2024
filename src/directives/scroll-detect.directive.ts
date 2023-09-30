@@ -7,22 +7,12 @@ type ScrollDirective = Directive & {
 
     cbFn: (v: number) => void
 
-    onActionDown: (e: PointerEvent | TouchEvent) => void
-    onActionUp: (e: PointerEvent | TouchEvent) => void
-    onActionMove: (e: PointerEvent | TouchEvent) => void
+    onActionDown: (e: TouchEvent) => void
+    onActionUp: (e: TouchEvent) => void
+    onActionMove: (e: TouchEvent) => void
 
     onActionKey: (e: KeyboardEvent) => void
     onWheel: (e: WheelEvent) => void
-}
-
-/**
- * Return the clientY value from mouse or touch event
- * @param {PointerEvent | TouchEvent} e
- * @param {boolean} isTouch
- * @return {number}
- */
-function getClientY(e: PointerEvent | TouchEvent, isTouch: boolean): number {
-    return isTouch ? (e as TouchEvent).targetTouches[0].clientY : (e as PointerEvent).clientY
 }
 
 export const ScrollDetectDirective: ScrollDirective = {
@@ -56,39 +46,28 @@ export const ScrollDetectDirective: ScrollDirective = {
 
     /**
      * Store the start value and enable move and up action
-     * @param {PointerEvent | TouchEvent} e
+     * @param {TouchEvent} e
      */
-    onActionDown(e: PointerEvent | TouchEvent) {
-        ScrollDetectDirective.startY = getClientY(e, ScrollDetectDirective.isTouch)
+    onActionDown(e: TouchEvent) {
+        ScrollDetectDirective.startY = e.targetTouches[0].clientY
 
-        window.addEventListener(
-            ScrollDetectDirective.isTouch ? 'touchmove' : 'pointermove',
-            ScrollDetectDirective.onActionMove
-        )
-        window.addEventListener(
-            ScrollDetectDirective.isTouch ? 'touchend' : 'pointerup',
-            ScrollDetectDirective.onActionUp
-        )
+        window.addEventListener('touchmove', ScrollDetectDirective.onActionMove)
+        window.addEventListener('touchend', ScrollDetectDirective.onActionUp)
     },
 
     /**
      * On move return the progressive value
      * @param {PointerEvent | TouchEvent} e
      */
-    onActionMove(e: PointerEvent | TouchEvent) {
-        const clientY = getClientY(e, ScrollDetectDirective.isTouch)
+    onActionMove(e: TouchEvent) {
+        const clientY = e.targetTouches[0].clientY
         let val = 0
 
-        if (ScrollDetectDirective.isTouch) {
-            const direction = clientY > ScrollDetectDirective.startY ? -1 : 1
-            val = (window.innerHeight / 30) * direction
+        const direction = clientY > ScrollDetectDirective.startY ? -1 : 1
+        val = (window.innerHeight / 30) * direction
 
-            ScrollDetectDirective.acceleration = ScrollDetectDirective.startY - clientY
-            ScrollDetectDirective.startY = clientY
-        } else {
-            val = ScrollDetectDirective.startY - clientY
-            console.log(val)
-        }
+        ScrollDetectDirective.acceleration = ScrollDetectDirective.startY - clientY
+        ScrollDetectDirective.startY = clientY
 
         ScrollDetectDirective.cbFn(val)
     },
@@ -96,15 +75,8 @@ export const ScrollDetectDirective: ScrollDirective = {
         ScrollDetectDirective.cbFn(ScrollDetectDirective.acceleration * 3)
         ScrollDetectDirective.acceleration = 0
 
-        window.removeEventListener(
-            ScrollDetectDirective.isTouch ? 'touchmove' : 'pointermove',
-            ScrollDetectDirective.onActionMove
-        )
-
-        window.removeEventListener(
-            ScrollDetectDirective.isTouch ? 'touchend' : 'pointerup',
-            ScrollDetectDirective.onActionUp
-        )
+        window.removeEventListener('touchmove', ScrollDetectDirective.onActionMove)
+        window.removeEventListener('touchend', ScrollDetectDirective.onActionUp)
     },
     //#endregion
 
@@ -116,10 +88,7 @@ export const ScrollDetectDirective: ScrollDirective = {
         ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window
     },
     mounted() {
-        window.addEventListener(
-            ScrollDetectDirective.isTouch ? 'touchstart' : 'pointerdown',
-            ScrollDetectDirective.onActionDown
-        )
+        window.addEventListener('touchstart', ScrollDetectDirective.onActionDown)
 
         if (!ScrollDetectDirective.isTouch) {
             window.addEventListener('wheel', ScrollDetectDirective.onWheel)
@@ -127,7 +96,7 @@ export const ScrollDetectDirective: ScrollDirective = {
         }
     },
     unmounted() {
-        window.removeEventListener('pointerdown', ScrollDetectDirective.onActionDown)
+        window.removeEventListener('touchstart', ScrollDetectDirective.onActionDown)
         window.removeEventListener('wheel', ScrollDetectDirective.onWheel)
     }
 }
