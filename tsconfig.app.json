@@ -9,7 +9,8 @@
       "@/*": ["./src/*"],
       "@directives/*": ["./src/directive/*"],
       "@components/*": ["./src/components/*"],
-      "@styles/*": ["./src/assets/styles/*"]
+      "@styles/*": ["./src/assets/styles/*"],
+      "@stores/*": ["./src/stores/*"]
     }
   }
 }
