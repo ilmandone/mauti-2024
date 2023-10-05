@@ -5,13 +5,18 @@ type SectionTranslationDirective = Directive & {
     needUpdate: boolean
 }
 
-export const SectionTranslationDirective: SectionTranslationDirective = {
-    multiplier: 0,
-    needUpdate: false,
+type HTMLElementExtended = HTMLElement & {
+    multiplier: number
+}
+
+export const SectionTranslationDirective: Directive = {
+    created(el: HTMLElementExtended) {
+        el.multiplier = 0
+    },
 
     mounted() {},
     unmounted() {},
-    updated(el: HTMLElement, binding) {
+    updated(el: HTMLElementExtended, binding) {
         const mainHeight: number = binding.value.mainHeight
         const elHeight: number = el.offsetHeight
         const scrollValue: number = binding.value.scrollValue
@@ -24,22 +29,16 @@ export const SectionTranslationDirective: SectionTranslationDirective = {
         console.log('top + height', topPosition + elHeight)
         console.log('mainHeight', mainHeight)
         console.log('***********************************')
-        console.log(mainHeight - scrollValue)
-        console.log(topPosition + elHeight)
-        if (
-            scrollValue + mainHeight <
-            mainHeight - (topPosition + elHeight + mainHeight * SectionTranslationDirective.multiplier)
-        ) {
+        console.log(scrollValue + mainHeight)
+        console.log(mainHeight - (topPosition + elHeight + mainHeight * el.multiplier))
+        if (scrollValue + mainHeight < mainHeight - (topPosition + elHeight + mainHeight * el.multiplier)) {
             console.log('UFFA')
-            SectionTranslationDirective.multiplier += 1
-            el.style.transform = `translateY(${mainHeight * SectionTranslationDirective.multiplier}px)`
-        } else if (
-            mainHeight - scrollValue <
-            topPosition + elHeight + mainHeight * SectionTranslationDirective.multiplier
-        ) {
+            el.multiplier += 1
+            el.style.transform = `translateY(${mainHeight * el.multiplier}px)`
+        } else if (mainHeight - scrollValue < topPosition + elHeight + mainHeight * el.multiplier) {
             console.log('GNUFFA')
-            SectionTranslationDirective.multiplier -= 1
-            el.style.transform = `translateY(${-mainHeight * SectionTranslationDirective.multiplier * -1}px)`
+            el.multiplier -= 1
+            el.style.transform = `translateY(${-mainHeight * el.multiplier * -1}px)`
         }
     }
 }

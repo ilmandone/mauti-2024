@@ -48,12 +48,11 @@ onUnmounted(() => {
         v-scroll-detect="{ cbFn: updateScroll }"
         :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
     >
-        <!--	    v-section-translation="{ scrollValue, mainHeight }"-->
-        <SHello />
-        <SBrief />
-        <SWhatIDo />
-        <SUpToNow />
-        <SContacts />
+        <SHello v-section-translation="{ scrollValue, mainHeight }" />
+        <SBrief v-section-translation="{ scrollValue, mainHeight }" />
+        <SWhatIDo v-section-translation="{ scrollValue, mainHeight }" />
+        <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
+        <SContacts v-section-translation="{ scrollValue, mainHeight }" />
     </main>
 </template>
 
