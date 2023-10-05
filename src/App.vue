@@ -3,6 +3,8 @@ import { RouterView } from 'vue-router'
 import { onMounted } from 'vue'
 
 onMounted(() => {
+    // window.addEventListener('resize', onWindowResize.bind(this))
+
     document.documentElement.style.setProperty(
         '--main-scroll-animation-time',
         window.navigator.maxTouchPoints > 0 ? '600ms' : '1200ms'

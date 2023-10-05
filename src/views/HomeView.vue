@@ -5,18 +5,47 @@ import SWhatIDo from '@components/sections/S-WhatIDo.vue'
 import SUpToNow from '@components/sections/S-UpToNow.vue'
 import SContacts from '@components/sections/S-Contacts.vue'
 
+import debounce from 'lodash.debounce'
+
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
+const main = ref()
 const scrollValue = ref<number>(0)
+const mainHeight = ref<number>(0)
 
+//#region Scroll
 const updateScroll = (v: number) => {
     scrollValue.value -= v
+    console.log(scrollValue.value)
 }
+//#endregion
+
+//#region Window resize
+const onWindowResize = debounce(() => {
+    mainHeight.value = main.value.offsetHeight
+}, 200)
+//#endregion
+
+//#region Hooks
+
+onMounted(() => {
+    window.addEventListener('resize', onWindowResize.bind(this))
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', onWindowResize.bind(this))
+})
+
+//#endregion
 </script>
 
 <template>
-    <main v-scroll-detect="{ cbFn: updateScroll }" :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }">
+    <main
+        ref="main"
+        v-scroll-detect="{ cbFn: updateScroll }"
+        :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
+    >
         <SHello />
         <SBrief />
         <SWhatIDo />
