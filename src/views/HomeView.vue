@@ -32,7 +32,10 @@ const onWindowResize = debounce(() => {
 
 onMounted(() => {
     window.addEventListener('resize', onWindowResize.bind(this))
-    mainHeight.value = main.value.offsetHeight
+    // TODO: Fix this workaround - One or more section do not return the proper height
+    window.setTimeout(() => {
+        mainHeight.value = main.value.getBoundingClientRect().height
+    }, 450)
 })
 
 onUnmounted(() => {
