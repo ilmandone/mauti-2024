@@ -1,23 +1,24 @@
 <script lang="ts" setup>
+import { onActivated, onMounted, onUnmounted, onUpdated, ref } from 'vue'
+import debounce from 'lodash.debounce'
+
 import SHello from '@components/sections/S-Hello.vue'
 import SBrief from '@components/sections/S-Brief.vue'
 import SWhatIDo from '@components/sections/S-WhatIDo.vue'
 import SUpToNow from '@components/sections/S-UpToNow.vue'
 import SContacts from '@components/sections/S-Contacts.vue'
 
-import debounce from 'lodash.debounce'
-
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
 
 const main = ref()
+const hello = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
 
 //#region Scroll
 const updateScroll = (v: number) => {
     scrollValue.value -= v
-    console.log(scrollValue.value)
 }
 //#endregion
 
@@ -31,6 +32,7 @@ const onWindowResize = debounce(() => {
 
 onMounted(() => {
     window.addEventListener('resize', onWindowResize.bind(this))
+    mainHeight.value = main.value.offsetHeight
 })
 
 onUnmounted(() => {
@@ -46,6 +48,7 @@ onUnmounted(() => {
         v-scroll-detect="{ cbFn: updateScroll }"
         :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
     >
+        <!--	    v-section-translation="{ scrollValue, mainHeight }"-->
         <SHello />
         <SBrief />
         <SWhatIDo />

@@ -1,5 +1,13 @@
 import type { Directive } from 'vue'
 
+/**
+ * Detect scroll input and return the delta value
+ * Input detected:
+ * - Touch
+ * - Wheel
+ * - Keyboard up/down arrows
+ */
+
 type ScrollDirective = Directive & {
     acceleration: number
     isTouch: boolean
