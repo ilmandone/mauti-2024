@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-    <section>
+    <section class="brief">
         <p class="intro">
             Passionate about visual interfaces from early age, I have honed my design and development skills through a
             career that has taken me from freelance to enterprise companies.
@@ -25,8 +25,9 @@
 @use '@styles/typo';
 @use '@styles/utils';
 
-section {
+section.brief {
     padding: 20vh 2rem;
+    background-color: orangered;
 
     p {
         margin-bottom: 3rem;

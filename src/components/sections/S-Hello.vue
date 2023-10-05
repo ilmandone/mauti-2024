@@ -30,6 +30,8 @@ defineExpose({ el })
     padding-top: 40vh;
     padding-bottom: 10vh;
 
+    background-color: greenyellow;
+
     .hello__svg {
         width: 100%;
         fill: var(--color-emphasize);
