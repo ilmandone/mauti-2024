@@ -14,6 +14,7 @@ type ScrollDirective = Directive & {
     startY: number
 
     cbFn: (v: number) => void
+    getScroll: () => number | void
 
     onActionDown: (e: TouchEvent) => void
     onActionUp: (e: TouchEvent) => void
@@ -29,6 +30,7 @@ export const ScrollDetectDirective: ScrollDirective = {
     startY: 0,
 
     cbFn() {},
+    getScroll() {},
 
     //#region Mouse
     onWheel(e) {
@@ -57,7 +59,7 @@ export const ScrollDetectDirective: ScrollDirective = {
      * @param {TouchEvent} e
      */
     onActionDown(e: TouchEvent) {
-        ScrollDetectDirective.startY = e.targetTouches[0].clientY
+        ScrollDetectDirective.startY = e.targetTouches[0].clientY - ScrollDetectDirective.startY
 
         window.addEventListener('touchmove', ScrollDetectDirective.onActionMove)
         window.addEventListener('touchend', ScrollDetectDirective.onActionUp)
@@ -71,17 +73,15 @@ export const ScrollDetectDirective: ScrollDirective = {
         const clientY = e.targetTouches[0].clientY
         let val = 0
 
-        const direction = clientY > ScrollDetectDirective.startY ? -1 : 1
-        val = (window.innerHeight / 30) * direction
+        val = clientY - ScrollDetectDirective.startY
 
         ScrollDetectDirective.acceleration = ScrollDetectDirective.startY - clientY
-        ScrollDetectDirective.startY = clientY
 
         ScrollDetectDirective.cbFn(val)
     },
     onActionUp() {
-        ScrollDetectDirective.cbFn(ScrollDetectDirective.acceleration * 3)
-        ScrollDetectDirective.acceleration = 0
+        ScrollDetectDirective.startY = ScrollDetectDirective.getScroll() as number
+        console.log('START Y', ScrollDetectDirective.startY)
 
         window.removeEventListener('touchmove', ScrollDetectDirective.onActionMove)
         window.removeEventListener('touchend', ScrollDetectDirective.onActionUp)
@@ -91,6 +91,7 @@ export const ScrollDetectDirective: ScrollDirective = {
     created(el: HTMLElement, binding) {
         // Register the cb function
         ScrollDetectDirective.cbFn = binding.value.cbFn
+        ScrollDetectDirective.getScroll = binding.value.getScroll
 
         // Detect touch device
         ScrollDetectDirective.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window

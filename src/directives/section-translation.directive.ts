@@ -18,10 +18,10 @@ export const SectionTranslationDirective: Directive = {
     unmounted() {},
     updated(el: HTMLElementExtended, binding) {
         const mainHeight: number = binding.value.mainHeight
-        const elHeight: number = el.offsetHeight
+        const elHeight = el.offsetHeight
         const scrollValue: number = binding.value.scrollValue
         const topPosition = el.offsetTop
-        console.log('***********************************')
+        /*console.log('***********************************')
         console.log('scroll', scrollValue)
         console.log('height', elHeight)
         console.log('top', topPosition)
@@ -30,7 +30,7 @@ export const SectionTranslationDirective: Directive = {
         console.log('mainHeight', mainHeight)
         console.log('***********************************')
         console.log(scrollValue + mainHeight)
-        console.log(mainHeight - (topPosition + elHeight + mainHeight * el.multiplier))
+        console.log(mainHeight - (topPosition + elHeight + mainHeight * el.multiplier))*/
         if (scrollValue + mainHeight < mainHeight - (topPosition + elHeight + mainHeight * el.multiplier)) {
             console.log('UFFA')
             el.multiplier += 1

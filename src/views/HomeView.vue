@@ -18,7 +18,11 @@ const mainHeight = ref<number>(0)
 
 //#region Scroll
 const updateScroll = (v: number) => {
-    scrollValue.value -= v
+    scrollValue.value = v
+}
+
+const getScrollValue = (): number => {
+    return scrollValue.value
 }
 //#endregion
 
@@ -35,7 +39,7 @@ onMounted(() => {
     // TODO: Fix this workaround - One or more section do not return the proper height
     window.setTimeout(() => {
         mainHeight.value = main.value.getBoundingClientRect().height
-    }, 450)
+    }, 550)
 })
 
 onUnmounted(() => {
@@ -48,7 +52,7 @@ onUnmounted(() => {
 <template>
     <main
         ref="main"
-        v-scroll-detect="{ cbFn: updateScroll }"
+        v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
         :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
     >
         <SHello v-section-translation="{ scrollValue, mainHeight }" />

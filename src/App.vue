@@ -7,7 +7,7 @@ onMounted(() => {
 
     document.documentElement.style.setProperty(
         '--main-scroll-animation-time',
-        window.navigator.maxTouchPoints > 0 ? '600ms' : '1200ms'
+        window.navigator.maxTouchPoints > 0 ? '1000ms' : '1200ms'
     )
 })
 </script>
