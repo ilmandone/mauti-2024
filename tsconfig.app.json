@@ -7,8 +7,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@components/*": ["./src/components*"],
-      "@styles/*": ["./src/assets/styles/*"]
+      "@directives/*": ["./src/directive/*"],
+      "@components/*": ["./src/components/*"],
+      "@styles/*": ["./src/assets/styles/*"],
+      "@stores/*": ["./src/stores/*"]
     }
   }
 }
