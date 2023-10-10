@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import UIToggleButton from '@components/ui/UI-ToggleButton.vue'
 import { useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'

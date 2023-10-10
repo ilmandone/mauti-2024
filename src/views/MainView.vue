@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onActivated, onMounted, onUnmounted, onUpdated, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import debounce from 'lodash.debounce'
 
 import SHello from '@components/sections/S-Hello.vue'

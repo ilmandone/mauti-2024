@@ -4,7 +4,7 @@ import { ref } from 'vue'
 const emits = defineEmits(['checked'])
 const checked = ref<boolean>(false)
 
-const click = (e) => {
+const click = () => {
     checked.value = !checked.value
     emits('checked', checked.value)
 }
