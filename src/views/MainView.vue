@@ -10,9 +10,9 @@ import SContacts from '@components/sections/S-Contacts.vue'
 
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
+import SHeader from '@components/sections/S-Header.vue'
 
 const main = ref()
-const hello = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
 
@@ -50,6 +50,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <SHeader />
     <main
         ref="main"
         v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
@@ -70,6 +71,6 @@ main {
     left: 0;
     width: 100%;
 
-    transition: transform var(--main-scroll-animation-time) cubic-bezier(0, 0.89, 0.41, 1.02);
+    transition: transform 1s cubic-bezier(0, 0.89, 0.41, 1.02);
 }
 </style>
