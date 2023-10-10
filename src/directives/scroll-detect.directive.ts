@@ -34,7 +34,7 @@ export const ScrollDetectDirective: ScrollDirective = {
 
     //#region Mouse
     onWheel(e) {
-        ScrollDetectDirective.cbFn(e.deltaY)
+        ScrollDetectDirective.cbFn(-e.deltaY + (ScrollDetectDirective.getScroll() as number))
     },
     //#endregion
 
@@ -42,10 +42,10 @@ export const ScrollDetectDirective: ScrollDirective = {
     onActionKey(e: KeyboardEvent) {
         switch (e.key) {
             case 'ArrowUp':
-                ScrollDetectDirective.cbFn(-100)
+                ScrollDetectDirective.cbFn(100 + (ScrollDetectDirective.getScroll() as number))
                 break
             case 'ArrowDown':
-                ScrollDetectDirective.cbFn(100)
+                ScrollDetectDirective.cbFn(-100 + (ScrollDetectDirective.getScroll() as number))
                 break
         }
     },
@@ -81,7 +81,6 @@ export const ScrollDetectDirective: ScrollDirective = {
     },
     onActionUp() {
         ScrollDetectDirective.startY = ScrollDetectDirective.getScroll() as number
-        console.log('START Y', ScrollDetectDirective.startY)
 
         window.removeEventListener('touchmove', ScrollDetectDirective.onActionMove)
         window.removeEventListener('touchend', ScrollDetectDirective.onActionUp)
