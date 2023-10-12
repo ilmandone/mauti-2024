@@ -9,8 +9,23 @@
     position: fixed;
     top: 0;
     right: 0;
-    background-color: var(--color-main);
+    width: 1rem;
+    height: 4rem;
 
+    background-color: transparent;
     pointer-events: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0.25rem;
+        left: 0.25rem;
+        width: 0.5rem;
+        height: 3.5rem;
+
+        border-radius: 0.25rem;
+
+        background-color: var(--color-main);
+    }
 }
 </style>

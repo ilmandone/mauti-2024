@@ -11,6 +11,7 @@ import SContacts from '@components/sections/S-Contacts.vue'
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
 import SHeader from '@components/sections/S-Header.vue'
+import UIScroller from '@components/ui/UI-Scroller.vue'
 
 const main = ref()
 const scrollValue = ref<number>(0)
@@ -66,6 +67,8 @@ onUnmounted(() => {
         <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
         <SContacts v-section-translation="{ scrollValue, mainHeight }" />
     </main>
+
+    <UIScroller />
 </template>
 
 <style lang="scss" scoped>
