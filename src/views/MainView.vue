@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import debounce from 'lodash.debounce'
 
 import SHello from '@components/sections/S-Hello.vue'
@@ -15,6 +15,10 @@ import SHeader from '@components/sections/S-Header.vue'
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
+
+const scrollProgress = computed<number>(() => {
+    return scrollValue.value / mainHeight.value
+})
 
 //#region Scroll
 const updateScroll = (v: number) => {
