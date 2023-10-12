@@ -39,7 +39,7 @@ header {
 
     box-sizing: border-box;
 
-    padding: 1rem 2rem;
+    padding: 2rem 2rem;
 
     display: flex;
     flex-direction: row;
@@ -47,5 +47,17 @@ header {
     align-items: center;
 
     @include utils.zIndex('header');
+
+    @include utils.media('t') {
+        padding: 2.5rem 3rem;
+    }
+
+    @include utils.media('tl') {
+        padding: 2rem 2.5rem;
+    }
+
+    @include utils.media('dl') {
+        padding: 3rem 3.5rem;
+    }
 }
 </style>
