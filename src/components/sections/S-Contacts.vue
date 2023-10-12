@@ -20,7 +20,7 @@
 
 section {
     padding: 10vh 2rem;
-    background-color: olive;
+    //background-color: olive;
 
     .contents {
         display: flex;
