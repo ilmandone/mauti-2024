@@ -1,6 +1,7 @@
 @use "@styles/a11y";
 @use "@styles/utils";
 @use "@styles/typo";
+@use "@styles/vars";
 
 @import "@styles/reset";
 @import "@styles/themes";
@@ -14,6 +15,10 @@ body {
 
     background-color: var(--color-bg);
     color: var(--color-main);
+
+    transition-property: color, background-color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
 
     .v-hidden {
         @include a11y.visuallyHidden;

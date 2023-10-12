@@ -52,7 +52,7 @@
 
 .wido {
     padding: 20vh 2rem;
-    background-color: darkcyan;
+    //background-color: darkcyan;
 
     &__single {
         margin: 2rem 0;

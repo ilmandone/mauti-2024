@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const emits = defineEmits(['checked'])
+const props = defineProps(['isChecked'])
 const checked = ref<boolean>(false)
 
 const click = () => {
     checked.value = !checked.value
     emits('checked', checked.value)
 }
+
+onMounted(() => {
+    checked.value = props.isChecked
+})
 </script>
 
 <template>
@@ -25,6 +30,8 @@ button[role='switch'] {
 
     border: none;
     border-radius: 1rem;
+
+    cursor: pointer;
 
     &:after {
         content: '';

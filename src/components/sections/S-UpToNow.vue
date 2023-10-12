@@ -76,7 +76,7 @@
 
 section.utn {
     padding: 20vh 0;
-    background-color: mediumpurple;
+    //background-color: mediumpurple;
 
     &__ header {
         width: 99vw;

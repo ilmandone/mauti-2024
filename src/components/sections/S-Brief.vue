@@ -27,7 +27,7 @@
 
 section.brief {
     padding: 20vh 2rem;
-    background-color: orangered;
+    //background-color: orangered;
 
     p {
         margin-bottom: 3rem;

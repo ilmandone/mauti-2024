@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import UIToggleButton from '@components/ui/UI-ToggleButton.vue'
+import UISwitchButton from '@components/ui/UI-SwitchButton.vue'
 import { useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
 
@@ -8,8 +8,8 @@ const intervalTime = ref<number>(0)
 const time = ref<number>(Date.now())
 
 const store = useMainStore()
-const { theme } = storeToRefs(store)
 const { setTheme } = store
+const { theme } = storeToRefs(store)
 
 const checked = (e) => {
     setTheme(e ? 'dark' : 'light')
@@ -25,7 +25,7 @@ onMounted(() => {
 <template>
     <header>
         <aside class="current-time" aria-label="current time">{{ time }}</aside>
-        <UIToggleButton @checked="checked" />
+        <UISwitchButton :is-checked="theme === 'dark'" @checked="checked" />
     </header>
 </template>
 
@@ -39,7 +39,7 @@ header {
 
     box-sizing: border-box;
 
-    padding: 1rem 2rem;
+    padding: 2rem 2rem;
 
     display: flex;
     flex-direction: row;
@@ -47,5 +47,17 @@ header {
     align-items: center;
 
     @include utils.zIndex('header');
+
+    @include utils.media('t') {
+        padding: 2.5rem 3rem;
+    }
+
+    @include utils.media('tl') {
+        padding: 2rem 2.5rem;
+    }
+
+    @include utils.media('dl') {
+        padding: 3rem 3.5rem;
+    }
 }
 </style>
