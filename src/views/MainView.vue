@@ -68,7 +68,7 @@ onUnmounted(() => {
         <SContacts v-section-translation="{ scrollValue, mainHeight }" />
     </main>
 
-    <UIScroller />
+    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />
 </template>
 
 <style lang="scss" scoped>
