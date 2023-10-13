@@ -28,6 +28,8 @@ const delta = computed(() => {
 </template>
 
 <style scoped lang="scss">
+@use '@styles/utils';
+
 .scroller {
     position: fixed;
     top: 0;
@@ -44,13 +46,31 @@ const delta = computed(() => {
         content: '';
         position: absolute;
         top: 0.25rem;
-        left: 0.25rem;
-        width: 0.5rem;
+        left: 0.4rem;
+        width: 0.2rem;
         height: calc(100% - 0.5rem);
 
-        border-radius: 0.25rem;
+        border-radius: 0.15rem;
 
         background-color: var(--color-main);
+    }
+
+    @include utils.media('dm') {
+        &::after {
+            left: 0.35rem;
+            width: 0.3rem;
+
+            border-radius: 0.175rem;
+        }
+    }
+
+    @include utils.media('dm') {
+        &::after {
+            left: 0.25rem;
+            width: 0.5rem;
+
+            border-radius: 0.25rem;
+        }
     }
 }
 </style>
