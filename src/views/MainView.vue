@@ -34,7 +34,7 @@ const getScrollValue = (): number => {
 //#region Window resize
 const onWindowResize = debounce(() => {
     mainHeight.value = main.value.offsetHeight
-}, 200)
+}, 100)
 //#endregion
 
 //#region Hooks
