@@ -43,11 +43,12 @@ button[role='switch'] {
         background-color: var(--color-main);
 
         border-radius: 0.5rem;
+
+        transition: left 0.2s ease-out;
     }
 
     &.checked:after {
-        left: auto;
-        right: 0.25rem;
+        left: 1.75rem;
     }
 }
 </style>
