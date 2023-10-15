@@ -12,6 +12,7 @@ import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-dete
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
 import SHeader from '@components/sections/S-Header.vue'
 import UIScroller from '@components/ui/UI-Scroller.vue'
+import SBackground from '@components/sections/S-Background.vue'
 
 const main = ref()
 const scrollValue = ref<number>(0)
@@ -55,6 +56,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <SBackground />
     <SHeader />
     <main
         ref="main"
