@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import debounce from 'lodash.debounce'
 
 import SHello from '@components/sections/S-Hello.vue'
@@ -11,10 +11,15 @@ import SContacts from '@components/sections/S-Contacts.vue'
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
 import SHeader from '@components/sections/S-Header.vue'
+import UIScroller from '@components/ui/UI-Scroller.vue'
 
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
+
+const scrollProgress = computed<number>(() => {
+    return scrollValue.value / mainHeight.value
+})
 
 //#region Scroll
 const updateScroll = (v: number) => {
@@ -29,7 +34,7 @@ const getScrollValue = (): number => {
 //#region Window resize
 const onWindowResize = debounce(() => {
     mainHeight.value = main.value.offsetHeight
-}, 200)
+}, 100)
 //#endregion
 
 //#region Hooks
@@ -62,6 +67,8 @@ onUnmounted(() => {
         <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
         <SContacts v-section-translation="{ scrollValue, mainHeight }" />
     </main>
+
+    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />
 </template>
 
 <style lang="scss" scoped>
