@@ -14,6 +14,7 @@
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "pinia": "^2.1.6",
+    "three": "^0.157.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },
