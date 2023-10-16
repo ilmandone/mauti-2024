@@ -47,3 +47,11 @@ $depth: (
     height: 100vh;
     overflow: hidden;
 }
+
+
+// Common transition
+@mixin baseTransition($attr...) {
+    transition-property: $attr;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+}

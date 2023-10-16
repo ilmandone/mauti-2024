@@ -85,6 +85,8 @@ section.utn {
     .utn__svg {
         width: 100%;
         fill: var(--color-emphasize);
+
+        @include utils.baseTransition(fill);
     }
 
     .contents {

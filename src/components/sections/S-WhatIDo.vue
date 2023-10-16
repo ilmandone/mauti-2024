@@ -65,6 +65,8 @@
     &__svg {
         height: 100%;
         fill: var(--color-emphasize);
+
+        @include utils.baseTransition(fill);
     }
 
     h3 {
