@@ -1,26 +1,35 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { ThreeBackground } from '@/three/three-bg'
 
 import { useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
 
 const store = useMainStore()
-const { state, theme } = storeToRefs(store)
-const { setLoadProgress } = store
+const { theme } = storeToRefs(store)
 
-watch(theme, (cv) => {
-    if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
-})
+const props = defineProps(['startLoading'])
+const emits = defineEmits<{
+    (event: 'loadProgress', id: number): void
+}>()
 
-watch(state, (s) => {
-    if (s === 'loading') {
-        const tBG = new ThreeBackground(threeContainer.value, setLoadProgress, theme.value === 'light' ? 0 : 1)
+const loadProgressCb = (v: number) => {
+    emits('loadProgress', v)
+}
+
+// Hooks
+watch(
+    () => props.startLoading,
+    () => {
+        const tBG = new ThreeBackground(threeContainer.value, loadProgressCb, theme.value === 'light' ? 0 : 1)
         tBG.start()
 
         threeBg.value = tBG
     }
+)
+
+watch(theme, (cv) => {
+    if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
 })
 
 const threeContainer = ref()

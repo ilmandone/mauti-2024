@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-import { RouterView } from 'vue-router'
 import { useMainStore } from '@stores/main'
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import SLoading from '@components/sections/S-Loading.vue'
 import MainView from '@/views/MainView.vue'
+import SHeader from '@components/sections/S-Header.vue'
+import SBackground from '@components/sections/S-Background.vue'
 
 const store = useMainStore()
 const { setTheme } = store
 const { theme } = storeToRefs(store)
+
+const loadingProgress = ref<number>(0)
+const startLoading = ref<boolean>(false)
 
 onMounted(() => {
     const hour = new Date().getHours()
@@ -22,9 +26,10 @@ watch(theme, (v, p) => {
 </script>
 
 <template>
-    <!--    <RouterView />-->
+    <SBackground :start-loading="startLoading" @load-progress="(v: number) => (loadingProgress = v)" />
+    <SHeader />
     <MainView />
-    <SLoading />
+    <SLoading :progress="loadingProgress" @start-loading="(v: boolean) => (startLoading = v)" />
 </template>
 
 <style scoped></style>

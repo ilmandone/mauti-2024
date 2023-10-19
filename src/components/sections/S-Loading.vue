@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import { useMainStore } from '@stores/main'
-import { storeToRefs } from 'pinia'
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
-const store = useMainStore()
-const { loadProgress } = storeToRefs(store)
-const { setState } = store
-const { state } = storeToRefs(store)
+const props = defineProps(['progress'])
+const emits = defineEmits<{
+    (event: 'startLoading', value: boolean): void
+}>()
 
-watch(loadProgress, (v: number) => {
-    if (v === 100) setState('loaded')
+const visible = ref<boolean>(true)
 
-    // On outro animation end
-    window.setTimeout(() => {
-        setState('running')
-    }, 3000)
-})
+watch(
+    () => props.progress,
+    (v) => {
+        if (v === 100) {
+            console.log('HIDE LOADING')
+            // TODO: al termine dell'animazione di uscita
+            visible.value = false
+        }
+    }
+)
 
 onMounted(() => {
-    // On intro animation end
+    // TODO Al termine dell'animazione di ingresso
     window.setTimeout(() => {
-        setState('loading')
-    }, 4000)
+        console.log('EMIT START LOADING')
+        emits('startLoading', true)
+    }, 1000)
 })
 </script>
 
 <template>
-    <div v-if="state !== 'running'" class="loading-wrapper"></div>
+    <div v-if="visible" class="loading-wrapper"></div>
 </template>
 
 <style scoped lang="scss">

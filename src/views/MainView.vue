@@ -65,8 +65,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <SBackground />
-    <SHeader />
     <main
         ref="main"
         v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
