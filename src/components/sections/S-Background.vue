@@ -7,22 +7,24 @@ import { storeToRefs } from 'pinia'
 import { watch } from 'vue'
 
 const store = useMainStore()
-const { theme } = storeToRefs(store)
+const { state, theme } = storeToRefs(store)
 const { setLoadProgress } = store
 
 watch(theme, (cv) => {
     if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
 })
 
+watch(state, (s) => {
+    if (s === 'loading') {
+        const tBG = new ThreeBackground(threeContainer.value, setLoadProgress, theme.value === 'light' ? 0 : 1)
+        tBG.start()
+
+        threeBg.value = tBG
+    }
+})
+
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()
-
-onMounted(() => {
-    const threeBG = new ThreeBackground(threeContainer.value, setLoadProgress, theme.value === 'light' ? 0 : 1)
-    threeBG.start()
-
-    threeBg.value = threeBG
-})
 </script>
 
 <template>

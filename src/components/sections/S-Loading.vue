@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import { useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
+import { onMounted, watch } from 'vue'
 
 const store = useMainStore()
 const { loadProgress } = storeToRefs(store)
+const { setState } = store
+const { state } = storeToRefs(store)
 
-watch(loadProgress, (v) => {
-    console.log(v)
+watch(loadProgress, (v: number) => {
+    if (v === 100) setState('loaded')
+
+    // On outro animation end
+    window.setTimeout(() => {
+        setState('running')
+    }, 3000)
+})
+
+onMounted(() => {
+    // On intro animation end
+    window.setTimeout(() => {
+        setState('loading')
+    }, 4000)
 })
 </script>
 
 <template>
-    <div class="loading-wrapper"></div>
+    <div v-if="state !== 'running'" class="loading-wrapper"></div>
 </template>
 
 <style scoped lang="scss">

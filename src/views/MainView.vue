@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import debounce from 'lodash.debounce'
 
 import SHello from '@components/sections/S-Hello.vue'
@@ -13,10 +13,15 @@ import { SectionTranslationDirective as vSectionTranslation } from '@/directives
 import SHeader from '@components/sections/S-Header.vue'
 import UIScroller from '@components/ui/UI-Scroller.vue'
 import SBackground from '@components/sections/S-Background.vue'
+import { useMainStore } from '@stores/main'
+import { storeToRefs } from 'pinia'
 
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
+
+const store = useMainStore()
+const { state } = storeToRefs(store)
 
 const scrollProgress = computed<number>(() => {
     return scrollValue.value / mainHeight.value
@@ -33,19 +38,23 @@ const getScrollValue = (): number => {
 //#endregion
 
 //#region Window resize
-const onWindowResize = debounce(() => {
-    mainHeight.value = main.value.offsetHeight
-}, 100)
+const updateMainHeight = () => {
+    mainHeight.value = main.value.getBoundingClientRect().height
+}
+
+const onWindowResize = debounce(updateMainHeight, 100)
 //#endregion
 
 //#region Hooks
 
+watch(state, (s) => {
+    if (s === 'loaded') {
+        updateMainHeight()
+    }
+})
+
 onMounted(() => {
     window.addEventListener('resize', onWindowResize.bind(this))
-    // TODO: Fix this workaround - One or more section do not return the proper height
-    window.setTimeout(() => {
-        mainHeight.value = main.value.getBoundingClientRect().height
-    }, 550)
 })
 
 onUnmounted(() => {
