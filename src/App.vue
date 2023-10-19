@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import { useMainStore } from '@stores/main'
 import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import SLoading from '@components/sections/S-Loading.vue'
 
 const store = useMainStore()
 const { setTheme } = store
@@ -21,6 +22,7 @@ watch(theme, (v, p) => {
 
 <template>
     <RouterView />
+    <SLoading />
 </template>
 
 <style scoped></style>

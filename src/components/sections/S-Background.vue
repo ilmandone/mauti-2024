@@ -8,6 +8,7 @@ import { watch } from 'vue'
 
 const store = useMainStore()
 const { theme } = storeToRefs(store)
+const { setLoadProgress } = store
 
 watch(theme, (cv) => {
     if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
@@ -16,12 +17,8 @@ watch(theme, (cv) => {
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()
 
-const threeLoadingProgress = (v: number): void => {
-    console.log(v)
-}
-
 onMounted(() => {
-    const threeBG = new ThreeBackground(threeContainer.value, threeLoadingProgress, theme.value === 'light' ? 0 : 1)
+    const threeBG = new ThreeBackground(threeContainer.value, setLoadProgress, theme.value === 'light' ? 0 : 1)
     threeBG.start()
 
     threeBg.value = threeBG

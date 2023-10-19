@@ -7,6 +7,7 @@ export const useMainStore = defineStore('main', () => {
     // Touch state
     const isTouch = ref(false)
     const theme = ref<Themes>('light')
+    const loadProgress = ref<number>(0)
     function setIsTouch(v: boolean) {
         isTouch.value = v
     }
@@ -15,5 +16,9 @@ export const useMainStore = defineStore('main', () => {
         theme.value = v
     }
 
-    return { isTouch, setIsTouch, theme, setTheme }
+    function setLoadProgress(v: number) {
+        loadProgress.value = v
+    }
+
+    return { isTouch, setIsTouch, theme, setTheme, loadProgress, setLoadProgress }
 })
