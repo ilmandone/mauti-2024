@@ -28,7 +28,7 @@ watch(theme, (v, p) => {
 <template>
     <SBackground :start-loading="startLoading" @load-progress="(v: number) => (loadingProgress = v)" />
     <SHeader />
-    <MainView />
+    <MainView :load-end="loadingProgress === 100" />
     <SLoading :progress="loadingProgress" @start-loading="(v: boolean) => (startLoading = v)" />
 </template>
 

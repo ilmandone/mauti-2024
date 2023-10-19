@@ -10,18 +10,15 @@ import SContacts from '@components/sections/S-Contacts.vue'
 
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
-import SHeader from '@components/sections/S-Header.vue'
 import UIScroller from '@components/ui/UI-Scroller.vue'
-import SBackground from '@components/sections/S-Background.vue'
-import { useMainStore } from '@stores/main'
-import { storeToRefs } from 'pinia'
 
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
 
-const store = useMainStore()
-const { state } = storeToRefs(store)
+const props = defineProps({
+    loadEnd: { default: false }
+})
 
 const scrollProgress = computed<number>(() => {
     return scrollValue.value / mainHeight.value
@@ -47,11 +44,10 @@ const onWindowResize = debounce(updateMainHeight, 100)
 
 //#region Hooks
 
-watch(state, (s) => {
-    if (s === 'loaded') {
-        updateMainHeight()
-    }
-})
+watch(
+    () => props.loadEnd,
+    () => updateMainHeight()
+)
 
 onMounted(() => {
     window.addEventListener('resize', onWindowResize.bind(this))
