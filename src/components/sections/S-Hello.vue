@@ -35,6 +35,8 @@ defineExpose({ el })
     .hello__svg {
         width: 100%;
         fill: var(--color-emphasize);
+
+        @include utils.baseTransition(fill);
     }
 
     &__sub {

@@ -1,3 +1,5 @@
+@use 'utils';
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz@9..40&family=Gentium+Plus:wght@400;700&display=swap');
 
 /* USAGE:
@@ -10,6 +12,8 @@ font-family: 'Gentium Plus', serif;
     font-weight: normal;
     font-size: $size;
     color: $color;
+
+    @include utils.baseTransition(color)
 }
 
 @mixin headers($size: 1rem, $color: var(--color-emphasize)) {
@@ -18,4 +22,6 @@ font-family: 'Gentium Plus', serif;
     font-size: $size;
 
     color: $color;
+
+    @include utils.baseTransition(color)
 }
