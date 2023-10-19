@@ -34,21 +34,41 @@ export class ThreeBackground {
         return new THREE.Vector2(texture.image.width, texture.image.height)
     }
 
-    private _updateTextureResolutions(): void {
-        this._uniforms.uCurrentImageRes.value = this._textureRes(this._textures[this._currentTexure])
-        this._uniforms.uNextImageRes.value = this._textureRes(this._textures[this._nextTexure])
+    private _updateUniformResolution(width: number, height: number): void {
+        this._uniforms.resolution.value.x = width
+        this._uniforms.resolution.value.y = height
+
+        const asp = this._textures[0].image.height / this._textures[0].image.width
+        let a1
+        let a2
+        if (height / width > asp) {
+            a1 = (width / height) * asp
+            a2 = 1
+        } else {
+            a1 = 1
+            a2 = height / width / asp
+        }
+
+        this._uniforms.resolution.value.z = a1
+        this._uniforms.resolution.value.w = a2
     }
 
     private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
         const uniforms = {
-            uTime: { value: 0.0 },
-            uOffset: { value: 0.0 },
-            uProgress: { value: 0.0 },
-            uScreenRes: { value: new THREE.Vector2() },
-            uCurrentImage: { value: this._textures[this._currentTexure] },
-            uCurrentImageRes: { value: this._textureRes(this._textures[this._currentTexure]) },
-            uNextImage: { value: this._textures[this._nextTexure] },
-            uNextImageRes: { value: this._textureRes(this._textures[this._nextTexure]) }
+            time: { type: 'f', value: 0 },
+            progress: { type: 'f', value: 0 },
+            border: { type: 'f', value: 0 },
+            intensity: { type: 'f', value: 0 },
+            width: { value: 0.5, type: 'f', min: 0, max: 10 },
+            scaleX: { value: 40, type: 'f', min: 0.1, max: 60 },
+            scaleY: { value: 40, type: 'f', min: 0.1, max: 60 },
+            transition: { type: 'f', value: 40 },
+            swipe: { type: 'f', value: 0 },
+            radius: { type: 'f', value: 0 },
+            texture1: { type: 'f', value: this._textures[0] },
+            texture2: { type: 'f', value: this._textures[1] },
+            displacement: { type: 'f', value: new THREE.TextureLoader().load('./img/disp1.jpg') },
+            resolution: { type: 'v4', value: new THREE.Vector4() }
         }
         const mat: THREE.ShaderMaterial = new THREE.ShaderMaterial({
             uniforms,
@@ -100,7 +120,7 @@ export class ThreeBackground {
         this._camera.aspect = width / height
         this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
 
-        this._uniforms.uScreenRes.value = new THREE.Vector2(width, height)
+        this._updateUniformResolution(width, height)
     }
 
     /**
@@ -134,7 +154,7 @@ export class ThreeBackground {
     }
 
     public change(v: number) {
-        this._uniforms.uProgress = { value: v }
+        this._uniforms.progress.value = v * 0.25
     }
 
     //#endregion

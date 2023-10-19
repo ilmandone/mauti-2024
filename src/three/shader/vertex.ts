@@ -1,6 +1,4 @@
-export const vertex = `
-	uniform float uTime;
-	uniform float uProgress;
+export const vertex = `	
 	varying vec2 vUv;
 	void main() {
 		vUv = uv;
