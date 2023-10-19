@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "animejs": "^3.2.1",
     "lodash.debounce": "^4.0.8",
     "pinia": "^2.1.6",
     "three": "^0.157.0",
