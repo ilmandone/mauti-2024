@@ -21,7 +21,7 @@ const threeLoadingProgress = (v: number): void => {
 }
 
 onMounted(() => {
-    const threeBG = new ThreeBackground(threeContainer.value, threeLoadingProgress)
+    const threeBG = new ThreeBackground(threeContainer.value, threeLoadingProgress, theme.value === 'light' ? 0 : 1)
     threeBG.start()
 
     threeBg.value = threeBG

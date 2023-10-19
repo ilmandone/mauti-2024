@@ -20,12 +20,14 @@ export class ThreeBackground {
     private _uniforms!: { [uniform: string]: IUniform }
 
     private _animation!: Anime.AnimeInstance
+    private readonly _startProgress!: number
 
     private readonly _PROGRESS_CB!: ProgressCb
 
-    constructor(container: HTMLElement, progressCb: ProgressCb) {
+    constructor(container: HTMLElement, progressCb: ProgressCb, startProgress: number) {
         this._container = container
         this._PROGRESS_CB = progressCb
+        this._startProgress = startProgress
     }
 
     private _textureLoaded(index: number) {
@@ -76,7 +78,7 @@ export class ThreeBackground {
     private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
         const uniforms = {
             time: { type: 'f', value: 0 },
-            progress: { type: 'f', value: 0 },
+            progress: { type: 'f', value: this._startProgress },
             border: { type: 'f', value: 0 },
             intensity: { type: 'f', value: 0 },
             width: { value: 0.5, type: 'f', min: 0, max: 10 },
