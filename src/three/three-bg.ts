@@ -27,11 +27,16 @@ export class ThreeBackground {
 
     private async _loadTextures(): Promise<THREE.Texture[]> {
         const loader = new THREE.TextureLoader()
-        return await Promise.all([
-            loader.loadAsync(this.IMAGES[0]),
-            loader.loadAsync(this.IMAGES[1]),
-            loader.loadAsync(this.IMAGES[2])
-        ])
+        return await Promise.all([loader.loadAsync(this.IMAGES[0]), loader.loadAsync(this.IMAGES[1])])
+    }
+
+    private _textureRes(texture: THREE.Texture): THREE.Vector2 {
+        return new THREE.Vector2(texture.image.width, texture.image.height)
+    }
+
+    private _updateTextureResolutions(): void {
+        this._uniforms.uCurrentImageRes.value = this._textureRes(this._textures[this._currentTexure])
+        this._uniforms.uNextImageRes.value = this._textureRes(this._textures[this._nextTexure])
     }
 
     private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
@@ -41,9 +46,9 @@ export class ThreeBackground {
             uProgress: { value: 0.0 },
             uScreenRes: { value: new THREE.Vector2() },
             uCurrentImage: { value: this._textures[this._currentTexure] },
-            uCurrentImageRes: { value: new THREE.Vector2() },
+            uCurrentImageRes: { value: this._textureRes(this._textures[this._currentTexure]) },
             uNextImage: { value: this._textures[this._nextTexure] },
-            uNextImageRes: { value: new THREE.Vector2() }
+            uNextImageRes: { value: this._textureRes(this._textures[this._nextTexure]) }
         }
         const mat: THREE.ShaderMaterial = new THREE.ShaderMaterial({
             uniforms,
@@ -74,9 +79,9 @@ export class ThreeBackground {
         _renderer.setSize(window.innerWidth, window.innerHeight)
 
         const g = new THREE.PlaneGeometry(planeSize, planeSize)
-        // const m = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide })
         const { mat, uniforms } = this.createMaterial()
         this._uniforms = uniforms
+
         const plane = new THREE.Mesh(g, mat)
         _scene.add(plane)
 
@@ -96,14 +101,6 @@ export class ThreeBackground {
         this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
 
         this._uniforms.uScreenRes.value = new THREE.Vector2(width, height)
-        this._uniforms.uCurrentImageRes.value = new THREE.Vector2(
-            this._textures[this._currentTexure].image.width,
-            this._textures[this._currentTexure].image.height
-        )
-        this._uniforms.uNextImageRes.value = new THREE.Vector2(
-            this._textures[this._nextTexure].image.width,
-            this._textures[this._nextTexure].image.height
-        )
     }
 
     /**
@@ -136,7 +133,9 @@ export class ThreeBackground {
         })
     }
 
-    public changeBg() {}
+    public change(v: number) {
+        this._uniforms.uProgress = { value: v }
+    }
 
     //#endregion
 }

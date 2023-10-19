@@ -2,6 +2,17 @@
 import { onMounted, ref } from 'vue'
 import { ThreeBackground } from '@/three/three-bg'
 
+import { useMainStore } from '@stores/main'
+import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
+
+const store = useMainStore()
+const { theme } = storeToRefs(store)
+
+watch(theme, (cv) => {
+    if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
+})
+
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()
 
