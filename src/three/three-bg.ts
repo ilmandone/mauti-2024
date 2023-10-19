@@ -18,8 +18,6 @@ export class ThreeBackground {
 
     private _textures!: THREE.Texture[]
     private _uniforms!: { [uniform: string]: IUniform }
-    private _currentTexure: number = 0
-    private _nextTexure: number = 1
 
     constructor(container: HTMLElement) {
         this._container = container
@@ -28,10 +26,6 @@ export class ThreeBackground {
     private async _loadTextures(): Promise<THREE.Texture[]> {
         const loader = new THREE.TextureLoader()
         return await Promise.all([loader.loadAsync(this.IMAGES[0]), loader.loadAsync(this.IMAGES[1])])
-    }
-
-    private _textureRes(texture: THREE.Texture): THREE.Vector2 {
-        return new THREE.Vector2(texture.image.width, texture.image.height)
     }
 
     private _updateUniformResolution(width: number, height: number): void {
