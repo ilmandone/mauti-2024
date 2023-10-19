@@ -16,8 +16,12 @@ watch(theme, (cv) => {
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()
 
+const threeLoadingProgress = (v: number): void => {
+    console.log(v)
+}
+
 onMounted(() => {
-    const threeBG = new ThreeBackground(threeContainer.value)
+    const threeBG = new ThreeBackground(threeContainer.value, threeLoadingProgress)
     threeBG.start()
 
     threeBg.value = threeBG

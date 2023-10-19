@@ -1,8 +1,11 @@
+import type { IUniform } from 'three'
 import * as THREE from 'three'
 import debounce from 'lodash.debounce'
-import type { IUniform } from 'three'
 import { vertex } from '@/three/shader/vertex'
 import { fragment } from '@/three/shader/fragment'
+import Anime from 'animejs/lib/anime.es.js'
+
+export type ProgressCb = (v: number) => unknown
 
 export class ThreeBackground {
     private _scene!: THREE.Scene
@@ -11,7 +14,7 @@ export class ThreeBackground {
     private _renderer!: THREE.WebGLRenderer
     private _windowRatio!: number
 
-    private readonly IMAGES: string[] = [
+    private readonly _IMAGES: string[] = [
         'https://images.unsplash.com/photo-1652972756954-70d7d5ecc0e5',
         'https://images.unsplash.com/photo-1653045649098-4fa866974b43'
     ]
@@ -19,32 +22,58 @@ export class ThreeBackground {
     private _textures!: THREE.Texture[]
     private _uniforms!: { [uniform: string]: IUniform }
 
-    constructor(container: HTMLElement) {
+    private _animation!: Anime.AnimeInstance
+
+    private readonly _PROGRESS_CB!: ProgressCb
+
+    constructor(container: HTMLElement, progressCb: ProgressCb) {
         this._container = container
+        this._PROGRESS_CB = progressCb
+    }
+
+    private _textureLoaded(index: number) {
+        this._PROGRESS_CB((index / this._IMAGES.length) * 100)
     }
 
     private async _loadTextures(): Promise<THREE.Texture[]> {
         const loader = new THREE.TextureLoader()
-        return await Promise.all([loader.loadAsync(this.IMAGES[0]), loader.loadAsync(this.IMAGES[1])])
+        const promises: Promise<THREE.Texture>[] = []
+        this._IMAGES.forEach((i, index) => {
+            promises.push(
+                loader.loadAsync(i).then((r) => {
+                    this._textureLoaded(index)
+                    return r
+                })
+            )
+        })
+        return await Promise.all(promises).then((r) => {
+            this._PROGRESS_CB(100)
+            return r
+        })
+    }
+
+    private _change(v: number): void {
+        const targets = this._uniforms.progress
+        this._animation = Anime({
+            targets,
+            value: v,
+            duration: 1200,
+            easing: 'easeOutSine',
+            autoplay: false
+        })
+
+        this._animation.play()
     }
 
     private _updateUniformResolution(width: number, height: number): void {
         this._uniforms.resolution.value.x = width
         this._uniforms.resolution.value.y = height
 
-        const asp = this._textures[0].image.height / this._textures[0].image.width
-        let a1
-        let a2
-        if (height / width > asp) {
-            a1 = (width / height) * asp
-            a2 = 1
-        } else {
-            a1 = 1
-            a2 = height / width / asp
-        }
+        const textRatio = this._textures[0].image.height / this._textures[0].image.width
+        const aspIsMoreThanText = height / width > textRatio
 
-        this._uniforms.resolution.value.z = a1
-        this._uniforms.resolution.value.w = a2
+        this._uniforms.resolution.value.z = aspIsMoreThanText ? (width / height) * textRatio : 1 // a1
+        this._uniforms.resolution.value.w = aspIsMoreThanText ? 1 : height / width / textRatio
     }
 
     private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
@@ -136,19 +165,23 @@ export class ThreeBackground {
 
     public start() {
         this._loadTextures().then((r) => {
+            // Store textures
             this._textures = r
+
+            // Init scene and store references
             Object.assign(this, this._init())
             this._container.appendChild(this._renderer.domElement)
 
             this._setViewPort()
             window.addEventListener('resize', this._resize.bind(this))
 
+            // Start rendere loop
             this._start()
         })
     }
 
     public change(v: number) {
-        this._uniforms.progress.value = v * 0.25
+        this._change(v)
     }
 
     //#endregion
