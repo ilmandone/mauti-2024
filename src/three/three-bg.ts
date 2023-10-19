@@ -14,10 +14,7 @@ export class ThreeBackground {
     private _renderer!: THREE.WebGLRenderer
     private _windowRatio!: number
 
-    private readonly _IMAGES: string[] = [
-        'https://images.unsplash.com/photo-1652972756954-70d7d5ecc0e5',
-        'https://images.unsplash.com/photo-1653045649098-4fa866974b43'
-    ]
+    private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
 
     private _textures!: THREE.Texture[]
     private _uniforms!: { [uniform: string]: IUniform }
@@ -90,7 +87,7 @@ export class ThreeBackground {
             radius: { type: 'f', value: 0 },
             texture1: { type: 'f', value: this._textures[0] },
             texture2: { type: 'f', value: this._textures[1] },
-            displacement: { type: 'f', value: new THREE.TextureLoader().load('./img/disp1.jpg') },
+            displacement: { type: 'f', value: this._textures[2] },
             resolution: { type: 'v4', value: new THREE.Vector4() }
         }
         const mat: THREE.ShaderMaterial = new THREE.ShaderMaterial({
