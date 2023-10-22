@@ -78,7 +78,7 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     .loading {
-        @include typo.headers(10vw, var(--background-color));
+        @include typo.headers(10vw, var(--color-bg));
         font-weight: 700;
 
         pointer-events: none;
