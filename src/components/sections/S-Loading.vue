@@ -85,7 +85,8 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     svg {
-        width: 60vw;
+        opacity: 0;
+        width: 40vw;
         stroke-dasharray: 20 100;
         pointer-events: none;
 
@@ -106,21 +107,27 @@ onMounted(() => {
 
 @keyframes intro {
     0% {
+        opacity: 0;
         stroke: var(--color-emphasize);
         stroke-dasharray: 0 300;
         fill: var(--color-emphasize);
+    }
+    5% {
+        opacity: 1;
     }
     45%,
     55% {
         stroke: var(--color-bg);
         stroke-dasharray: 210 300;
         fill: var(--color-emphasize);
+        opacity: 1;
     }
 
     100% {
         stroke: var(--color-bg);
         stroke-dasharray: 210 300;
         fill: var(--color-bg);
+        opacity: 1;
     }
 }
 </style>
