@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-const INITIAL_WAIT = 200
+const END_WAIT = 200
 
 const props = defineProps(['progress'])
 const emits = defineEmits<{
@@ -33,21 +33,25 @@ const handleInterval = (): void => {
     if (displayed.value > 95 && props.progress === 100) {
         displayed.value = 100
         stopInterval()
-        out.value = true
+
+        // End preloading
+        window.setTimeout(() => {
+            out.value = true
+        }, END_WAIT)
     }
 }
 
-const startLooading = () => {
+const startLoading = () => {
     startInterval()
     emits('startLoading', true)
-    loadingEL.value?.removeEventListener('transitionend', startLooading)
+    loadingEL.value?.removeEventListener('transitionend', startLoading)
 }
 
 onMounted(() => {
     window.setTimeout(() => {
-        loadingEL.value?.addEventListener('transitionend', startLooading.bind(this))
+        loadingEL.value?.addEventListener('transitionend', startLoading.bind(this))
         show.value = true
-    }, INITIAL_WAIT)
+    }, 0)
 })
 </script>
 
@@ -86,6 +90,7 @@ onMounted(() => {
 
         opacity: 0;
         transition: opacity 1s cubic-bezier(0.96, -0.01, 0.36, 1);
+        transition-delay: 0.25s;
 
         &.show {
             opacity: 1;
