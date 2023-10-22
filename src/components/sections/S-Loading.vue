@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-const END_WAIT = 200
+const END_WAIT = 500
 
 const props = defineProps(['progress'])
 const emits = defineEmits<{
@@ -44,12 +44,12 @@ const handleInterval = (): void => {
 const startLoading = () => {
     startInterval()
     emits('startLoading', true)
-    loadingEL.value?.removeEventListener('transitionend', startLoading)
+    loadingEL.value?.removeEventListener('animationend', startLoading)
 }
 
 onMounted(() => {
     window.setTimeout(() => {
-        loadingEL.value?.addEventListener('transitionend', startLoading.bind(this))
+        loadingEL.value?.addEventListener('animationend', startLoading.bind(this))
         show.value = true
     }, 0)
 })
@@ -57,7 +57,9 @@ onMounted(() => {
 
 <template>
     <div v-if="visible" :class="{ out }" class="loadingEL-wrapper">
-        <div ref="loadingEL" class="loadingEL" :class="{ show }">{{ displayed }}</div>
+        <svg viewBox="0 0 185 80" ref="loadingEL" :class="{ show }">
+            <text y="76" text-anchor="middle" x="50%">{{ displayed }}</text>
+        </svg>
     </div>
 </template>
 
@@ -82,23 +84,43 @@ onMounted(() => {
 
     @include utils.zIndex('loader');
 
-    .loadingEL {
-        @include typo.headers(10vw, var(--color-bg));
-        font-weight: 700;
-
+    svg {
+        width: 60vw;
+        stroke-dasharray: 20 100;
         pointer-events: none;
 
-        opacity: 0;
-        transition: opacity 1s cubic-bezier(0.96, -0.01, 0.36, 1);
-        transition-delay: 0.25s;
+        text {
+            @include typo.headers(120px, var(--color-bg));
+            font-weight: 700;
+        }
 
         &.show {
-            opacity: 1;
+            animation: intro 1.5s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
         }
     }
 
     &.out {
         transform: translateX(100vw);
+    }
+}
+
+@keyframes intro {
+    0% {
+        stroke: var(--color-emphasize);
+        stroke-dasharray: 0 300;
+        fill: var(--color-emphasize);
+    }
+    45%,
+    55% {
+        stroke: var(--color-bg);
+        stroke-dasharray: 210 300;
+        fill: var(--color-emphasize);
+    }
+
+    100% {
+        stroke: var(--color-bg);
+        stroke-dasharray: 210 300;
+        fill: var(--color-bg);
     }
 }
 </style>
