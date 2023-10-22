@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+const INITIAL_WAIT = 200
+
 const props = defineProps(['progress'])
 const emits = defineEmits<{
     (event: 'startLoading', value: boolean): void
 }>()
 
-const visible = ref<boolean>(true)
 const displayed = ref<number>(0)
 const interval = ref<number | null>(null)
+const out = ref<boolean>(false)
+const show = ref<boolean>(false)
+const visible = ref<boolean>(true)
+
+const loadingEL = ref<HTMLElement>()
 
 const startInterval = () => {
     interval.value = window.setInterval(handleInterval, 30)
@@ -27,34 +33,27 @@ const handleInterval = (): void => {
     if (displayed.value > 95 && props.progress === 100) {
         displayed.value = 100
         stopInterval()
-        console.log('HIDE LOADING')
+        out.value = true
     }
 }
 
-/*watch(
-    () => props.progress,
-    (v) => {
-        if (v === 100) {
-
-            // TODO: al termine dell'animazione di uscita
-            // visible.value = false
-        }
-    }
-)*/
+const startLooading = () => {
+    startInterval()
+    emits('startLoading', true)
+    loadingEL.value?.removeEventListener('transitionend', startLooading)
+}
 
 onMounted(() => {
-    // TODO Al termine dell'animazione di ingresso
     window.setTimeout(() => {
-        console.log('EMIT START LOADING')
-        startInterval()
-        emits('startLoading', true)
-    }, 1000)
+        loadingEL.value?.addEventListener('transitionend', startLooading.bind(this))
+        show.value = true
+    }, INITIAL_WAIT)
 })
 </script>
 
 <template>
-    <div v-if="visible" class="loading-wrapper">
-        <div class="loading">{{ displayed }}</div>
+    <div v-if="visible" :class="{ out }" class="loadingEL-wrapper">
+        <div ref="loadingEL" class="loadingEL" :class="{ show }">{{ displayed }}</div>
     </div>
 </template>
 
@@ -62,7 +61,7 @@ onMounted(() => {
 @use '@styles/utils';
 @use '@styles/typo';
 
-.loading-wrapper {
+.loadingEL-wrapper {
     position: absolute;
     top: 0;
     left: 0;
@@ -75,13 +74,26 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
 
+    transition: transform 1s cubic-bezier(0.96, -0.01, 0.36, 1);
+
     @include utils.zIndex('loader');
 
-    .loading {
+    .loadingEL {
         @include typo.headers(10vw, var(--color-bg));
         font-weight: 700;
 
         pointer-events: none;
+
+        opacity: 0;
+        transition: opacity 1s cubic-bezier(0.96, -0.01, 0.36, 1);
+
+        &.show {
+            opacity: 1;
+        }
+    }
+
+    &.out {
+        transform: translateX(100vw);
     }
 }
 </style>
