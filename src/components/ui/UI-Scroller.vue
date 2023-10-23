@@ -14,8 +14,14 @@ const height = computed<number>(() => {
 const delta = computed(() => {
     let value = 0
     if (props.progress) {
-        value = (~~props.progress - props.progress) * (window.innerHeight - height.value)
+        let delta = ~~props.progress - props.progress        
+        if(delta < 0) delta += 1
+
+        value = delta * (window.innerHeight - height.value)
     }
+
+    console.log("@@@ ~ file: UI-Scroller.vue:17 ~ delta ~ value:", value)
+    
     return value
 })
 </script>
