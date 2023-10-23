@@ -36,10 +36,10 @@ const getScrollValue = (): number => {
 
 //#region Window resize
 const updateMainHeight = () => {
-    mainHeight.value = main.value.getBoundingClientRect().height
+    mainHeight.value = main.value?.getBoundingClientRect().height
 }
 
-const onWindowResize = debounce(updateMainHeight, 100)
+const onWindowResize = debounce(updateMainHeight, 150)
 //#endregion
 
 //#region Hooks

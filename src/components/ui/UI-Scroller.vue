@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps(['progress', 'mainHeight'])
 
@@ -19,8 +19,6 @@ const delta = computed(() => {
 
         value = delta * (window.innerHeight - height.value)
     }
-
-    console.log("@@@ ~ file: UI-Scroller.vue:17 ~ delta ~ value:", value)
     
     return value
 })
@@ -45,8 +43,6 @@ const delta = computed(() => {
 
     background-color: transparent;
     pointer-events: none;
-
-    // transition: transform 0.2s ease-out;
 
     &::after {
         content: '';
