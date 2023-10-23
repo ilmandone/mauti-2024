@@ -14,17 +14,30 @@ const out = ref<boolean>(false)
 const show = ref<boolean>(false)
 const visible = ref<boolean>(true)
 
-const loadingEL = ref<HTMLElement>()
+const loadingRef = ref<HTMLElement>()
+const wrapperRef = ref<HTMLElement>()
 
+//#region Progress
+
+/**
+ * Start the interval related to progress value
+ */
 const startInterval = () => {
     interval.value = window.setInterval(handleInterval, 30)
 }
 
-const stopInterval = () => {
+/**
+ * Clear the interval
+ */
+const clearInterval = () => {
     window.clearInterval(interval.value as number)
     interval.value = null
 }
 
+/**
+ * For each interval show the preloading value
+ * @description Show the value with a value progression for a smooth animation
+ */
 const handleInterval = (): void => {
     if (displayed.value < props.progress) {
         displayed.value += Math.round((props.progress - displayed.value) / 5)
@@ -32,32 +45,48 @@ const handleInterval = (): void => {
 
     if (displayed.value > 95 && props.progress === 100) {
         displayed.value = 100
-        stopInterval()
+        clearInterval()
 
         // End preloading
         window.setTimeout(() => {
+            wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
             out.value = true
         }, END_WAIT)
     }
 }
 
+//#endregion
+
+/**
+ * On out complete remove the loader from the DOM
+ */
+const outComplete = () => {
+    wrapperRef.value?.removeEventListener('transitionend', outComplete)
+    visible.value = false
+}
+
+/**
+ * Start the interval and emits startLoading
+ * @description The startLoading event will be captured by the background that will return the progress value
+ */
 const startLoading = () => {
     startInterval()
     emits('startLoading', true)
-    loadingEL.value?.removeEventListener('animationend', startLoading)
+    loadingRef.value?.removeEventListener('animationend', startLoading)
 }
 
 onMounted(() => {
     window.setTimeout(() => {
-        loadingEL.value?.addEventListener('animationend', startLoading.bind(this))
+        loadingRef.value?.addEventListener('animationend', startLoading.bind(this))
         show.value = true
     }, 0)
 })
+
 </script>
 
 <template>
-    <div v-if="visible" :class="{ out }" class="loadingEL-wrapper">
-        <svg viewBox="0 0 185 80" ref="loadingEL" :class="{ show }">
+    <div v-if="visible" :class="{ out }" class="wrapper" ref="wrapperRef">
+        <svg viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
             <text y="76" text-anchor="middle" x="50%">{{ displayed }}</text>
         </svg>
     </div>
@@ -67,7 +96,7 @@ onMounted(() => {
 @use '@styles/utils';
 @use '@styles/typo';
 
-.loadingEL-wrapper {
+.wrapper {
     position: absolute;
     top: 0;
     left: 0;
@@ -102,6 +131,12 @@ onMounted(() => {
 
     &.out {
         transform: translateX(100vw);
+    }
+
+    @include utils.media('dm') {
+        svg {
+            width: 35vw;
+        }
     }
 }
 
