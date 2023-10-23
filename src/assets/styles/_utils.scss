@@ -30,7 +30,7 @@ $reference: (
 // Z-index
 $depth: (
         'header': 100,
-        'modal': 9999
+        'loader': 9999
 );
 
 @mixin zIndex($value) {

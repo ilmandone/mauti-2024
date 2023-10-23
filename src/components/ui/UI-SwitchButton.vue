@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const emits = defineEmits(['checked'])
-const props = defineProps(['isChecked'])
+const props = defineProps({
+    isChecked: {
+        type: Boolean,
+        default: null
+    }
+})
 const checked = ref<boolean>(false)
 
 const click = () => {
-    checked.value = !checked.value
-    emits('checked', checked.value)
+    emits('checked', !checked.value)
 }
 
-onMounted(() => {
-    checked.value = props.isChecked
-})
+watch(
+    () => props.isChecked,
+    (c) => {
+        checked.value = c
+    }
+)
 </script>
 
 <template>

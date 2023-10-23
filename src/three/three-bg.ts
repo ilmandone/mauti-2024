@@ -31,7 +31,7 @@ export class ThreeBackground {
     }
 
     private _textureLoaded(index: number) {
-        this._PROGRESS_CB((index / this._IMAGES.length) * 100)
+        this._PROGRESS_CB(Math.round((index / this._IMAGES.length) * 100))
     }
 
     private async _loadTextures(): Promise<THREE.Texture[]> {

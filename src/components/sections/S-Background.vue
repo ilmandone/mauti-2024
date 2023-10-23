@@ -1,13 +1,32 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { ThreeBackground } from '@/three/three-bg'
 
 import { useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
 
 const store = useMainStore()
 const { theme } = storeToRefs(store)
+
+const props = defineProps(['startLoading'])
+const emits = defineEmits<{
+    (event: 'loadProgress', id: number): void
+}>()
+
+const loadProgressCb = (v: number) => {
+    emits('loadProgress', v)
+}
+
+// Hooks
+watch(
+    () => props.startLoading,
+    () => {
+        const tBG = new ThreeBackground(threeContainer.value, loadProgressCb, theme.value === 'light' ? 0 : 1)
+        tBG.start()
+
+        threeBg.value = tBG
+    }
+)
 
 watch(theme, (cv) => {
     if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
@@ -15,17 +34,6 @@ watch(theme, (cv) => {
 
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()
-
-const threeLoadingProgress = (v: number): void => {
-    console.log(v)
-}
-
-onMounted(() => {
-    const threeBG = new ThreeBackground(threeContainer.value, threeLoadingProgress, theme.value === 'light' ? 0 : 1)
-    threeBG.start()
-
-    threeBg.value = threeBG
-})
 </script>
 
 <template>

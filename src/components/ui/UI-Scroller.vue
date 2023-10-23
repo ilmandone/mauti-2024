@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps(['progress', 'mainHeight'])
 
@@ -14,8 +14,12 @@ const height = computed<number>(() => {
 const delta = computed(() => {
     let value = 0
     if (props.progress) {
-        value = (~~props.progress - props.progress) * (window.innerHeight - height.value)
+        let delta = ~~props.progress - props.progress        
+        if(delta < 0) delta += 1
+
+        value = delta * (window.innerHeight - height.value)
     }
+    
     return value
 })
 </script>
@@ -39,8 +43,6 @@ const delta = computed(() => {
 
     background-color: transparent;
     pointer-events: none;
-
-    // transition: transform 0.2s ease-out;
 
     &::after {
         content: '';

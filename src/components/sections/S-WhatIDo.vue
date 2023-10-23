@@ -29,7 +29,7 @@
             <h3>UX / UI Design</h3>
             <p>
                 I design UX experience for all kind of platform with particolar care for information architecture,
-                accessibility and testing. I also transform UX wireframes and lo-fi interfaces into more polished
+                accessibility and testing. I also transform UX wireframes and lo-fi interfaces into more polished solutions
                 working with colors, typography and iconography.
             </p>
         </section>
