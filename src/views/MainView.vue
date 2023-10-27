@@ -43,7 +43,6 @@ const onWindowResize = debounce(updateMainHeight, 150)
 //#endregion
 
 //#region Hooks
-
 watch(
     () => props.loadEnd,
     () => updateMainHeight()
