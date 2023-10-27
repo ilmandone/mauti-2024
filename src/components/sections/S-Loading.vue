@@ -81,7 +81,6 @@ onMounted(() => {
         show.value = true
     }, 0)
 })
-
 </script>
 
 <template>
@@ -115,7 +114,7 @@ onMounted(() => {
 
     svg {
         opacity: 0;
-        width: 40vw;
+        width: 70vw;
         stroke-dasharray: 20 100;
         pointer-events: none;
 
@@ -131,6 +130,12 @@ onMounted(() => {
 
     &.out {
         transform: translateX(100vw);
+    }
+
+    @include utils.media('t') {
+        svg {
+            width: 60vw;
+        }
     }
 
     @include utils.media('dm') {
