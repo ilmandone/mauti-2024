@@ -14,5 +14,15 @@ export default defineConfig({
             '@styles': fileURLToPath(new URL('./src/assets/styles', import.meta.url)),
             '@stores': fileURLToPath(new URL('./src/stores', import.meta.url))
         }
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    three: ['three'],
+                    animejs: ['animejs']
+                }
+            }
+        }
     }
 })
