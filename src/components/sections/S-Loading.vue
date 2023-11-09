@@ -120,22 +120,22 @@ onMounted(() => {
     svg {
         &#logo {
             width: 90vw;
-            margin-top: 5vh;
+            margin: 2vh 0 0 0;
             opacity: 0;
 
-            stroke-width: 6px;
             fill: transparent;
+            stroke-width: 8px;
             stroke-dasharray: 0 1000;
 
             &.show {
-                animation: intro-logo 0.8s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                animation: intro-logo 1.2s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
             }
         }
 
         &#loading {
-            width: 45vw;
+            width: 36vw;
             margin-top: 2vh;
-            margin-left: 20vw;
+            margin-left: 25vw;
             opacity: 0;
 
             stroke-width: 2px;
@@ -158,14 +158,63 @@ onMounted(() => {
     }
 
     @include utils.media('t') {
-        svg#loading {
-            width: 60vw;
+        svg {
+            &#logo {
+                width: 65vw;
+                stroke-width: 6px;
+            }
+
+            &#loading {
+                margin-left: 45vw;
+                width: 20vw;
+            }
+        }
+    }
+
+    @include utils.media('tl') {
+        flex-direction: row;
+        svg {
+            &#logo {
+                width: 48vw;
+                margin: 0 12vw 0 0;
+                stroke-width: 8px;
+            }
+
+            &#loading {
+                position: absolute;
+                bottom: 6vh;
+                right: 6vw;
+                margin: 0;
+                width: 14vw;
+            }
         }
     }
 
     @include utils.media('dm') {
-        svg#loading {
-            width: 35vw;
+        svg {
+            &#logo {
+                width: 48vw;
+                margin: 0 12vw 0 0;
+                stroke-width: 6px;
+            }
+
+            &#loading {
+                width: 8.5vw;
+            }
+        }
+    }
+
+    @include utils.media('dl') {
+        svg {
+            &#logo {
+                width: 48vw;
+                margin: 0 12vw 0 0;
+                stroke-width: 4px;
+            }
+
+            &#loading {
+                width: 7vw;
+            }
         }
     }
 }
@@ -200,17 +249,25 @@ onMounted(() => {
     0% {
         opacity: 0;
         stroke: var(--color-emphasize);
-        stroke-dasharray: 0 1000;
-        fill: var(--color-emphasize);
+        stroke-dasharray: 0 700;
+        transform: translate3d(0, -15px, 0);
     }
     5% {
         opacity: 1;
     }
+
+    70% {
+        stroke: var(--color-bg);
+        stroke-dasharray: 700 700;
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
     100% {
         stroke: var(--color-bg);
-        stroke-dasharray: 800 0;
-        fill: var(--color-emphasize);
+        stroke-dasharray: 6000 1200;
         opacity: 1;
+        transform: translate3d(0, 0, 0);
     }
 }
 </style>
