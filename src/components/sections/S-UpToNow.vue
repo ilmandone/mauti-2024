@@ -161,5 +161,11 @@ section.utn {
             }
         }
     }
+
+    @include utils.media('dl') {
+        .contents {
+            margin: 10vw 15vw 8rem 15vw;
+        }
+    }
 }
 </style>

@@ -66,5 +66,9 @@ section {
             }
         }
     }
+
+    @include utils.media('dl') {
+        padding: 20vh 25vw 20vh 15vw;
+    }
 }
 </style>

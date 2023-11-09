@@ -29,8 +29,8 @@
             <h3>UX / UI Design</h3>
             <p>
                 I design UX experience for all kind of platform with particolar care for information architecture,
-                accessibility and testing. I also transform UX wireframes and lo-fi interfaces into more polished solutions
-                working with colors, typography and iconography.
+                accessibility and testing. I also transform UX wireframes and lo-fi interfaces into more polished
+                solutions working with colors, typography and iconography.
             </p>
         </section>
 
@@ -115,7 +115,8 @@
     }
 
     @include utils.media('dl') {
-        padding: 25vh 20vw 25vh 10vw;
+        padding: 25vh 0 25vh 15vw;
+        width: 60vw;
     }
 }
 </style>

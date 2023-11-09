@@ -59,5 +59,18 @@ section.brief {
             font-size: 1.7vw;
         }
     }
+
+    @include utils.media('dl') {
+        width: 60vw;
+        padding: 20vh 0 30vh 15vw;
+
+        .intro {
+            font-size: 2.25vw;
+        }
+
+        .side-line {
+            font-size: 1.6vw;
+        }
+    }
 }
 </style>
