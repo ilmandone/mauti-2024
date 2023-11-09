@@ -48,10 +48,10 @@ const handleInterval = (): void => {
         clearInterval()
 
         // End preloading
-        window.setTimeout(() => {
+        /* window.setTimeout(() => {
             wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
             out.value = true
-        }, END_WAIT)
+        }, END_WAIT)*/
     }
 }
 
@@ -85,7 +85,11 @@ onMounted(() => {
 
 <template>
     <div v-if="visible" :class="{ out }" class="wrapper" ref="wrapperRef">
-        <svg viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
+        <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
+            <use xlink:href="/vectors/logo.svg#logo"></use>
+        </svg>
+
+        <svg id="loading" viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
             <text y="76" text-anchor="middle" x="50%">{{ displayed }}</text>
         </svg>
     </div>
@@ -105,6 +109,7 @@ onMounted(() => {
     background-color: var(--color-emphasize);
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
@@ -113,18 +118,38 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     svg {
-        opacity: 0;
-        width: 70vw;
-        stroke-dasharray: 20 100;
-        pointer-events: none;
+        &#logo {
+            width: 90vw;
+            margin-top: 5vh;
+            opacity: 0;
 
-        text {
-            @include typo.headers(120px, var(--color-bg));
-            font-weight: 700;
+            stroke-width: 6px;
+            fill: transparent;
+            stroke-dasharray: 0 1000;
+
+            &.show {
+                animation: intro-logo 0.8s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+            }
         }
 
-        &.show {
-            animation: intro 1.5s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+        &#loading {
+            width: 45vw;
+            margin-top: 2vh;
+            margin-left: 20vw;
+            opacity: 0;
+
+            stroke-width: 2px;
+            stroke-dasharray: 20 100;
+            pointer-events: none;
+
+            text {
+                @include typo.headers(120px, var(--color-bg));
+                font-weight: 700;
+            }
+
+            &.show {
+                animation: intro-loading 1.5s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+            }
         }
     }
 
@@ -133,19 +158,19 @@ onMounted(() => {
     }
 
     @include utils.media('t') {
-        svg {
+        svg#loading {
             width: 60vw;
         }
     }
 
     @include utils.media('dm') {
-        svg {
+        svg#loading {
             width: 35vw;
         }
     }
 }
 
-@keyframes intro {
+@keyframes intro-loading {
     0% {
         opacity: 0;
         stroke: var(--color-emphasize);
@@ -158,15 +183,33 @@ onMounted(() => {
     45%,
     55% {
         stroke: var(--color-bg);
-        stroke-dasharray: 210 300;
+        stroke-dasharray: 300 300;
         fill: var(--color-emphasize);
         opacity: 1;
     }
 
     100% {
         stroke: var(--color-bg);
-        stroke-dasharray: 210 300;
+        stroke-dasharray: 300 300;
         fill: var(--color-bg);
+        opacity: 1;
+    }
+}
+
+@keyframes intro-logo {
+    0% {
+        opacity: 0;
+        stroke: var(--color-emphasize);
+        stroke-dasharray: 0 1000;
+        fill: var(--color-emphasize);
+    }
+    5% {
+        opacity: 1;
+    }
+    100% {
+        stroke: var(--color-bg);
+        stroke-dasharray: 800 0;
+        fill: var(--color-emphasize);
         opacity: 1;
     }
 }
