@@ -84,8 +84,18 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="visible" :class="{ out }" class="wrapper" ref="wrapperRef">
-        <svg viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
+    <div
+        v-if="visible"
+        :class="{ out }"
+        class="wrapper"
+        ref="wrapperRef"
+        :style="{ borderWidth: `${displayed * 0.02}vw` }"
+    >
+        <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
+            <use xlink:href="/vectors/logo.svg#logo"></use>
+        </svg>
+
+        <svg id="loading" viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
             <text y="76" text-anchor="middle" x="50%">{{ displayed }}</text>
         </svg>
     </div>
@@ -94,7 +104,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use '@styles/utils';
 @use '@styles/typo';
-
+@use './scss/S-Loading.animations';
 .wrapper {
     position: absolute;
     top: 0;
@@ -102,9 +112,16 @@ onMounted(() => {
     width: 100vw;
     height: 100vh;
 
+    box-sizing: border-box;
+
+    border-color: var(--color-bg);
+    border-style: solid;
+    border-width: 0;
+
     background-color: var(--color-emphasize);
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
@@ -113,61 +130,109 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     svg {
-        opacity: 0;
-        width: 70vw;
-        stroke-dasharray: 20 100;
-        pointer-events: none;
+        transition: transform 0.9s cubic-bezier(0.96, -0.01, 0.36, 1);
 
-        text {
-            @include typo.headers(120px, var(--color-bg));
-            font-weight: 700;
+        &#logo {
+            width: 86vw;
+
+            fill: transparent;
+
+            stroke-width: 8px;
+            stroke-dasharray: 0 1000;
+            stroke: var(--color-bg);
+
+            &.show {
+                @include S-Loading.use('logo', 1.25s);
+            }
         }
 
-        &.show {
-            animation: intro 1.5s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+        &#loading {
+            width: 25vw;
+            margin-top: 2vh;
+            margin-left: 35vw;
+            opacity: 0;
+
+            stroke-width: 2px;
+            stroke-dasharray: 20 100;
+            pointer-events: none;
+
+            text {
+                @include typo.headers(120px, var(--color-bg));
+                font-weight: 700;
+            }
+
+            &.show {
+                @include S-Loading.use('loading', 1s, 0.2s);
+            }
         }
     }
 
     &.out {
         transform: translateX(100vw);
+        svg {
+            transform: translateX(30vw);
+        }
     }
 
     @include utils.media('t') {
         svg {
-            width: 60vw;
+            &#logo {
+                width: 65vw;
+                stroke-width: 6px;
+            }
+
+            &#loading {
+                margin-left: 45vw;
+                width: 18vw;
+            }
+        }
+    }
+
+    @include utils.media('tl') {
+        flex-direction: row;
+        svg {
+            &#logo {
+                width: 48vw;
+                margin: 0 12vw 0 0;
+                stroke-width: 8px;
+            }
+
+            &#loading {
+                position: absolute;
+                bottom: 6vh;
+                right: 6vw;
+                margin: 0;
+                width: 10vw;
+            }
         }
     }
 
     @include utils.media('dm') {
         svg {
-            width: 35vw;
+            &#logo {
+                width: 48vw;
+                margin: 0 12vw 0 0;
+                stroke-width: 10px;
+            }
+
+            &#loading {
+                width: 8.5vw;
+            }
         }
     }
-}
 
-@keyframes intro {
-    0% {
-        opacity: 0;
-        stroke: var(--color-emphasize);
-        stroke-dasharray: 0 300;
-        fill: var(--color-emphasize);
-    }
-    5% {
-        opacity: 1;
-    }
-    45%,
-    55% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 210 300;
-        fill: var(--color-emphasize);
-        opacity: 1;
-    }
+    @include utils.media('dl') {
+        svg {
+            &#logo {
+                width: 38vw;
+                margin: 0 15vw 0 0;
+                stroke-width: 4px;
+            }
 
-    100% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 210 300;
-        fill: var(--color-bg);
-        opacity: 1;
+            &#loading {
+                width: 5vw;
+            }
+        }
     }
 }
 </style>
