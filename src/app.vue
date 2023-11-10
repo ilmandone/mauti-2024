@@ -2,10 +2,10 @@
 import { useMainStore } from '@stores/main'
 import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import SLoading from '@components/sections/S-Loading.vue'
-import MainView from '@/views/MainView.vue'
-import SHeader from '@components/sections/S-Header.vue'
-import SBackground from '@components/sections/S-Background.vue'
+import SLoading from '@components/sections/s-loading.vue'
+import MainView from '@/views/main-view.vue'
+import SHeader from '@components/sections/s-header.vue'
+import SBackground from '@components/sections/s-background.vue'
 
 const store = useMainStore()
 const { setTheme } = store
