@@ -125,7 +125,9 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
 
-    transition: transform 1s cubic-bezier(0.96, -0.01, 0.36, 1);
+    transition:
+        transform 1s cubic-bezier(0.96, -0.01, 0.36, 1),
+        border-width 0.1s ease-out;
 
     @include utils.zIndex('loader');
 
