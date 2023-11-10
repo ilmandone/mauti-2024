@@ -89,7 +89,7 @@ onMounted(() => {
         :class="{ out }"
         class="wrapper"
         ref="wrapperRef"
-        :style="{ borderWidth: `${displayed * 0.025}vw` }"
+        :style="{ borderWidth: `${displayed * 0.02}vw` }"
     >
         <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
             <use xlink:href="/vectors/logo.svg#logo"></use>
@@ -162,7 +162,7 @@ onMounted(() => {
             }
 
             &.show {
-                @include S-Loading.use('loading', 1s, 0.5s);
+                @include S-Loading.use('loading', 1s, 0.2s);
             }
         }
     }
