@@ -48,10 +48,10 @@ const handleInterval = (): void => {
         clearInterval()
 
         // End preloading
-        window.setTimeout(() => {
-            wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
-            out.value = true
-        }, END_WAIT)
+        /*window.setTimeout(() => {
+			wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
+			out.value = true
+		}, END_WAIT)*/
     }
 }
 
@@ -98,7 +98,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use '@styles/utils';
 @use '@styles/typo';
-
+@use './scss/S-Loading.animations';
 .wrapper {
     position: absolute;
     top: 0;
@@ -130,7 +130,7 @@ onMounted(() => {
             stroke: var(--color-bg);
 
             &.show {
-                animation: intro-logo 1.25s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                @include S-Loading.use('logo', 1.25s);
             }
         }
 
@@ -150,8 +150,7 @@ onMounted(() => {
             }
 
             &.show {
-                animation: intro-loading 1s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
-                animation-delay: 0.5s;
+                @include S-Loading.use('loading', 1s, 0.5s);
             }
         }
     }
@@ -219,49 +218,6 @@ onMounted(() => {
                 width: 5vw;
             }
         }
-    }
-}
-
-@keyframes intro-loading {
-    0% {
-        opacity: 0;
-        stroke: var(--color-emphasize);
-        stroke-dasharray: 0 245;
-        fill: var(--color-emphasize);
-    }
-    5% {
-        opacity: 1;
-    }
-    45%,
-    55% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 245 245;
-        fill: var(--color-emphasize);
-        opacity: 1;
-    }
-
-    100% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 250 0;
-        fill: var(--color-bg);
-        opacity: 1;
-    }
-}
-
-@keyframes intro-logo {
-    0% {
-        stroke: var(--color-emphasize);
-        stroke-dasharray: 0 1200;
-    }
-    8% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 0 1200;
-    }
-
-    100% {
-        stroke: var(--color-bg);
-        stroke-dasharray: 1200 0;
-        opacity: 1;
     }
 }
 </style>
