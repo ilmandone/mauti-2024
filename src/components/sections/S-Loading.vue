@@ -84,7 +84,13 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="visible" :class="{ out }" class="wrapper" ref="wrapperRef">
+    <div
+        v-if="visible"
+        :class="{ out }"
+        class="wrapper"
+        ref="wrapperRef"
+        :style="{ borderWidth: `${displayed * 0.025}vw` }"
+    >
         <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
             <use xlink:href="/vectors/logo.svg#logo"></use>
         </svg>
@@ -106,6 +112,12 @@ onMounted(() => {
     width: 100vw;
     height: 100vh;
 
+    box-sizing: border-box;
+
+    border-color: var(--color-bg);
+    border-style: solid;
+    border-width: 0;
+
     background-color: var(--color-emphasize);
 
     display: flex;
@@ -121,8 +133,7 @@ onMounted(() => {
         transition: transform 0.9s cubic-bezier(0.96, -0.01, 0.36, 1);
 
         &#logo {
-            width: 90vw;
-            opacity: 0;
+            width: 86vw;
 
             fill: transparent;
 
@@ -201,7 +212,7 @@ onMounted(() => {
             &#logo {
                 width: 48vw;
                 margin: 0 12vw 0 0;
-                stroke-width: 6px;
+                stroke-width: 10px;
             }
 
             &#loading {

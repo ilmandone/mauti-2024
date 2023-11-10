@@ -50,9 +50,14 @@ $ease: (
         stroke-dasharray: 0 1200;
     }
 
-    100% {
+    50%, 51% {
         stroke: var(--color-bg);
         stroke-dasharray: 1200 0;
-        opacity: 1;
+        fill: var(--color-emphasize);
+    }
+
+    100% {
+        fill: var(--color-bg);
+        stroke-dasharray: 1200 0;
     }
 }
