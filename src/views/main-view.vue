@@ -7,10 +7,11 @@ import SBrief from '@components/sections/s-brief.vue'
 import SWhatIDo from '@components/sections/s-whatI-do.vue'
 import SUpToNow from '@components/sections/s-up-to-now.vue'
 import SContacts from '@components/sections/s-contacts.vue'
+import UIScroller from '@components/ui/ui-scroller.vue'
+import RIntObserver from '@components/renderless/r-int-observer.vue'
 
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
-import UIScroller from '@components/ui/ui-scroller.vue'
 
 const main = ref()
 const scrollValue = ref<number>(0)
@@ -65,11 +66,13 @@ onUnmounted(() => {
         v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
         :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
     >
-        <SHello v-section-translation="{ scrollValue, mainHeight }" />
-        <SBrief v-section-translation="{ scrollValue, mainHeight }" />
-        <SWhatIDo v-section-translation="{ scrollValue, mainHeight }" />
-        <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
-        <SContacts v-section-translation="{ scrollValue, mainHeight }" />
+        <RIntObserver>
+            <SHello v-section-translation="{ scrollValue, mainHeight }" />
+            <SBrief v-section-translation="{ scrollValue, mainHeight }" />
+            <SWhatIDo v-section-translation="{ scrollValue, mainHeight }" />
+            <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
+            <SContacts v-section-translation="{ scrollValue, mainHeight }" />
+        </RIntObserver>
     </main>
 
     <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />

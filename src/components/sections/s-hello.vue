@@ -1,9 +1,14 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
+import { ADD_TO_OBSERVER, type IAddToObserver } from '@components/renderless/r-int-observer'
 
 const el = ref()
-
 defineExpose({ el })
+
+const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
+onMounted(() => {
+    addToObserver(el.value)
+})
 </script>
 
 <template>
