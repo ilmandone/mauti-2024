@@ -48,10 +48,10 @@ const handleInterval = (): void => {
         clearInterval()
 
         // End preloading
-        /* window.setTimeout(() => {
+        window.setTimeout(() => {
             wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
             out.value = true
-        }, END_WAIT)*/
+        }, END_WAIT)
     }
 }
 
@@ -120,20 +120,22 @@ onMounted(() => {
     svg {
         &#logo {
             width: 90vw;
-            margin: 2vh 0 0 0;
+            margin: 0 0 0 0;
             opacity: 0;
 
             fill: transparent;
+
             stroke-width: 8px;
             stroke-dasharray: 0 1000;
+            stroke: var(--color-bg);
 
             &.show {
-                animation: intro-logo 1.2s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                animation: intro-logo 1.25s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
             }
         }
 
         &#loading {
-            width: 36vw;
+            width: 25vw;
             margin-top: 2vh;
             margin-left: 25vw;
             opacity: 0;
@@ -148,7 +150,8 @@ onMounted(() => {
             }
 
             &.show {
-                animation: intro-loading 1.5s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                animation: intro-loading 1s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                animation-delay: 0.5s;
             }
         }
     }
@@ -166,7 +169,7 @@ onMounted(() => {
 
             &#loading {
                 margin-left: 45vw;
-                width: 20vw;
+                width: 18vw;
             }
         }
     }
@@ -185,7 +188,7 @@ onMounted(() => {
                 bottom: 6vh;
                 right: 6vw;
                 margin: 0;
-                width: 14vw;
+                width: 10vw;
             }
         }
     }
@@ -207,13 +210,13 @@ onMounted(() => {
     @include utils.media('dl') {
         svg {
             &#logo {
-                width: 48vw;
-                margin: 0 12vw 0 0;
+                width: 38vw;
+                margin: 0 15vw 0 0;
                 stroke-width: 4px;
             }
 
             &#loading {
-                width: 7vw;
+                width: 5vw;
             }
         }
     }
@@ -223,7 +226,7 @@ onMounted(() => {
     0% {
         opacity: 0;
         stroke: var(--color-emphasize);
-        stroke-dasharray: 0 300;
+        stroke-dasharray: 0 245;
         fill: var(--color-emphasize);
     }
     5% {
@@ -232,14 +235,14 @@ onMounted(() => {
     45%,
     55% {
         stroke: var(--color-bg);
-        stroke-dasharray: 300 300;
+        stroke-dasharray: 245 245;
         fill: var(--color-emphasize);
         opacity: 1;
     }
 
     100% {
         stroke: var(--color-bg);
-        stroke-dasharray: 300 300;
+        stroke-dasharray: 250 0;
         fill: var(--color-bg);
         opacity: 1;
     }
@@ -247,27 +250,18 @@ onMounted(() => {
 
 @keyframes intro-logo {
     0% {
-        opacity: 0;
         stroke: var(--color-emphasize);
-        stroke-dasharray: 0 700;
-        transform: translate3d(0, -15px, 0);
+        stroke-dasharray: 0 1200;
     }
-    5% {
-        opacity: 1;
-    }
-
-    70% {
+    8% {
         stroke: var(--color-bg);
-        stroke-dasharray: 700 700;
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
+        stroke-dasharray: 0 1200;
     }
 
     100% {
         stroke: var(--color-bg);
-        stroke-dasharray: 6000 1200;
+        stroke-dasharray: 1200 0;
         opacity: 1;
-        transform: translate3d(0, 0, 0);
     }
 }
 </style>
