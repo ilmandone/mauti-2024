@@ -8,7 +8,7 @@ $ease: (
 );
 
 @mixin use($animation, $duration, $delay: 0, $easing : 'default') {
-    @if (map-has-key($animations, $animation) && map-has-key($ease, $easing)) {
+    @if (map-has-key($animations, $animation) and map-has-key($ease, $easing)) {
         animation: #{map-get($animations, $animation)} $duration #{map-get($ease, $easing)} forwards;
         animation-delay: $delay;
     }

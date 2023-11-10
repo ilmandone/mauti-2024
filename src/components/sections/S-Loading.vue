@@ -120,7 +120,6 @@ onMounted(() => {
     svg {
         &#logo {
             width: 90vw;
-            margin: 0 0 0 0;
             opacity: 0;
 
             fill: transparent;
@@ -137,7 +136,7 @@ onMounted(() => {
         &#loading {
             width: 25vw;
             margin-top: 2vh;
-            margin-left: 25vw;
+            margin-left: 35vw;
             opacity: 0;
 
             stroke-width: 2px;
