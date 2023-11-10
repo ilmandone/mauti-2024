@@ -48,10 +48,10 @@ const handleInterval = (): void => {
         clearInterval()
 
         // End preloading
-        /*window.setTimeout(() => {
-			wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
-			out.value = true
-		}, END_WAIT)*/
+        window.setTimeout(() => {
+            wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
+            out.value = true
+        }, END_WAIT)
     }
 }
 
@@ -118,6 +118,8 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     svg {
+        transition: transform 0.9s cubic-bezier(0.96, -0.01, 0.36, 1);
+
         &#logo {
             width: 90vw;
             opacity: 0;
@@ -156,6 +158,9 @@ onMounted(() => {
 
     &.out {
         transform: translateX(100vw);
+        svg {
+            transform: translateX(30vw);
+        }
     }
 
     @include utils.media('t') {
