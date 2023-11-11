@@ -1,20 +1,4 @@
-$animations: (
-    'loading': intro-loading,
-    'logo': intro-logo
-);
-
-$ease: (
-    'default': cubic-bezier(0.96, -0.01, 0.36, 1)
-);
-
-@mixin use($animation, $duration, $delay: 0, $easing : 'default') {
-    @if (map-has-key($animations, $animation) and map-has-key($ease, $easing)) {
-        animation: #{map-get($animations, $animation)} $duration #{map-get($ease, $easing)} forwards;
-        animation-delay: $delay;
-    }
-}
-
-@keyframes intro-loading {
+@keyframes k-loading {
     0% {
         opacity: 0;
         stroke: var(--color-emphasize);
@@ -40,7 +24,7 @@ $ease: (
     }
 }
 
-@keyframes intro-logo {
+@keyframes k-logo {
     0% {
         stroke: var(--color-emphasize);
         stroke-dasharray: 0 1200;

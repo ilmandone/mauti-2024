@@ -2,15 +2,16 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import debounce from 'lodash.debounce'
 
-import SHello from '@components/sections/S-Hello.vue'
-import SBrief from '@components/sections/S-Brief.vue'
-import SWhatIDo from '@components/sections/S-WhatIDo.vue'
-import SUpToNow from '@components/sections/S-UpToNow.vue'
-import SContacts from '@components/sections/S-Contacts.vue'
+import SHello from '@components/sections/s-hello.vue'
+import SBrief from '@components/sections/s-brief.vue'
+import SWhatIDo from '@components/sections/s-what-i-do.vue'
+import SUpToNow from '@components/sections/s-up-to-now.vue'
+import SContacts from '@components/sections/s-contacts.vue'
+import UIScroller from '@components/ui/ui-scroller.vue'
+import RIntObserver from '@components/renderless/r-int-observer.vue'
 
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
-import UIScroller from '@components/ui/UI-Scroller.vue'
 
 const main = ref()
 const scrollValue = ref<number>(0)
@@ -65,11 +66,13 @@ onUnmounted(() => {
         v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
         :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
     >
-        <SHello v-section-translation="{ scrollValue, mainHeight }" />
-        <SBrief v-section-translation="{ scrollValue, mainHeight }" />
-        <SWhatIDo v-section-translation="{ scrollValue, mainHeight }" />
-        <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
-        <SContacts v-section-translation="{ scrollValue, mainHeight }" />
+        <RIntObserver>
+            <SHello v-section-translation="{ scrollValue, mainHeight }" />
+            <SBrief v-section-translation="{ scrollValue, mainHeight }" />
+            <SWhatIDo v-section-translation="{ scrollValue, mainHeight }" />
+            <SUpToNow v-section-translation="{ scrollValue, mainHeight }" />
+            <SContacts v-section-translation="{ scrollValue, mainHeight }" />
+        </RIntObserver>
     </main>
 
     <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />
@@ -82,6 +85,6 @@ main {
     left: 0;
     width: 100%;
 
-    transition: transform 1s cubic-bezier(0, 0.89, 0.41, 1.02);
+    transition: transform 1.5s cubic-bezier(0, 0.89, 0.41, 1.02);
 }
 </style>

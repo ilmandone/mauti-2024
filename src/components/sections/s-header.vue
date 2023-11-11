@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import UISwitchButton from '@components/ui/UI-SwitchButton.vue'
+import UISwitchButton from '@components/ui/ui-switch-button.vue'
 import { type Themes, useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
 

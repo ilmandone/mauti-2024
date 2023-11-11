@@ -1,12 +1,25 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref, inject } from 'vue'
+
+import { ADD_TO_OBSERVER, type IAddToObserver } from '@components/renderless/r-int-observer'
+
+const intro = ref<HTMLElement>()
+const sideLine = ref<HTMLElement>()
+
+const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
+
+onMounted(() => {
+    addToObserver([intro.value, sideLine.value] as HTMLElement[])
+})
+</script>
 
 <template>
     <section class="brief">
-        <p class="intro">
+        <p class="intro" ref="intro">
             Passionate about visual interfaces from early age, I have honed my design and development skills through a
             career that has taken me from freelance to enterprise companies.
         </p>
-        <div class="side-line">
+        <div class="side-line" ref="sideLine">
             <p>
                 I use a methodical approach for each task, believing that an accurate and precise analysis is the
                 foundation of any solid, effective and lasting solution.
@@ -25,9 +38,10 @@
 @use '@styles/typo';
 @use '@styles/utils';
 
+@use './scss/common-animations';
+
 section.brief {
     padding: 20vh 2rem;
-    //background-color: orangered;
 
     p {
         margin-bottom: 3rem;
@@ -35,11 +49,21 @@ section.brief {
 
     .intro {
         @include typo.body(1.6rem);
+        opacity: 0;
+
+        &.on-screen {
+            @include common-animations.use('fade-slide-in', 0.75s, 0.1s);
+        }
     }
 
     .side-line {
         font-size: 1.3rem;
         @include commons.left-border;
+        opacity: 0;
+
+        &.on-screen {
+            @include common-animations.use('fade-in', 0.75s, 0.2s);
+        }
     }
 
     @include utils.media('t') {

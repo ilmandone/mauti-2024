@@ -1,0 +1,46 @@
+$animations: (
+    'fade-in': k-fade-in,
+    'fade-slide-in': k-fade-slide-in,
+    'fade-up-in': k-fade-up-in,
+);
+
+$ease: (
+        'default': cubic-bezier(0.96, -0.01, 0.36, 1),
+        'ease-out': ease-out
+);
+
+@mixin use($animation, $duration: 1s, $delay: 0s, $easing: 'ease-out') {
+    @if (map-has-key($animations, $animation) and map-has-key($ease, $easing)) {
+        animation: #{map-get($animations, $animation)} $duration #{map-get($ease, $easing)} forwards;
+        animation-delay: $delay;
+    }
+}
+
+@keyframes k-fade-in {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes k-fade-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(4vw);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes k-fade-up-in {
+    from {
+        opacity: 0;
+        transform: translateY(2vh);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,16 @@
+@keyframes k-what-i-do-show {
+    0% {
+        fill: transparent;
+        stroke-dasharray: 0 800;
+    }
+
+    70% {
+        fill: transparent;
+        stroke-dasharray: 800 0;
+    }
+
+    100% {
+        fill: var(--color-emphasize);
+        stroke-dasharray: 800 0;
+    }
+}
