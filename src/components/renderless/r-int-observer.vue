@@ -1,12 +1,40 @@
 <script lang="ts" setup>
 import { ADD_TO_OBSERVER } from '@components/renderless/r-int-observer'
-import { provide } from 'vue'
+import { onUnmounted, provide } from 'vue'
 
+let observer: IntersectionObserver | null = null
+
+const createObserver = (): IntersectionObserver => {
+    return new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                const target = entry.target
+                if (entry.isIntersecting) {
+                    target.classList.add('on-screen')
+                } else {
+                    target.classList.remove('on-screen')
+                }
+            })
+        },
+        {
+            threshold: [0, 1]
+        }
+    )
+}
 const addToObserver = (el: HTMLElement) => {
-    console.log('ADD TO OBSERVER', el)
+    if (!observer) observer = createObserver()
+    observer.observe(el)
 }
 
+// Create the provider to set el in observer
 provide(ADD_TO_OBSERVER, addToObserver)
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect()
+        observer = null
+    }
+})
 </script>
 
 <template>
