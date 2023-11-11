@@ -71,7 +71,7 @@ onMounted(() => {
     }
 
     header {
-        width: 50vw;
+        width: 65vw;
     }
 
     &__svg {
@@ -87,7 +87,7 @@ onMounted(() => {
         @include utils.baseTransition(fill, stroke);
 
         &.on-screen {
-            animation: k-what-i-do-show 2s ease-out forwards;
+            animation: k-what-i-do-show 1.5s ease-out forwards;
             animation-delay: 0.25s;
         }
     }
@@ -96,7 +96,7 @@ onMounted(() => {
         opacity: 0;
 
         &.on-screen {
-            @include common-animations.use('fade-in', 0.75s, 0.1s);
+            @include common-animations.use('fade-up-in', 0.75s, 0.1s);
         }
     }
 

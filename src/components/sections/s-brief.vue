@@ -52,7 +52,7 @@ section.brief {
         opacity: 0;
 
         &.on-screen {
-            @include common-animations.use('fade-in', 0.75s, 0.1s);
+            @include common-animations.use('fade-slide-in', 0.75s, 0.1s);
         }
     }
 
