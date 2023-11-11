@@ -110,7 +110,7 @@ section.utn {
         @include utils.baseTransition(fill, stroke);
 
         &.on-screen {
-            animation: k-up-to-now-show 1.5s ease-out forwards;
+            animation: k-up-to-now-show 1s ease-out forwards;
             animation-delay: 0.25s;
         }
     }

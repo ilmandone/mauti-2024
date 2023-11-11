@@ -1,7 +1,8 @@
 @keyframes k-up-to-now-show {
     0% {
-        stroke-dasharray: 0 800;
         fill: transparent;
+        stroke-dasharray: 0 800;
+        transform: translateY(6vh);
     }
 
     70% {
@@ -12,5 +13,6 @@
     100% {
         fill: var(--color-emphasize);
         stroke-dasharray: 800 0;
+        transform: translateY(0);
     }
 }

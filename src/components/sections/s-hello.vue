@@ -53,7 +53,7 @@ onMounted(() => {
         @include utils.baseTransition(fill, stroke);
 
         &.on-screen {
-            animation: k-hello-show 1.5s ease-out forwards;
+            animation: k-hello-show 1s ease-out forwards;
             animation-delay: 0.25s;
         }
     }
