@@ -2,7 +2,6 @@
     0% {
         fill: transparent;
         stroke-dasharray: 0 1500;
-        transform: translateX(-3vw);
     }
 
     70% {
@@ -14,6 +13,5 @@
     100% {
         fill: var(--color-emphasize);
         stroke-dasharray: 1500 0;
-        transform: translateX(0);
     }
 }
