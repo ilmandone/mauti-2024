@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce'
 
 import SHello from '@components/sections/s-hello.vue'
 import SBrief from '@components/sections/s-brief.vue'
-import SWhatIDo from '@components/sections/s-whatI-do.vue'
+import SWhatIDo from '@components/sections/s-what-i-do.vue'
 import SUpToNow from '@components/sections/s-up-to-now.vue'
 import SContacts from '@components/sections/s-contacts.vue'
 import UIScroller from '@components/ui/ui-scroller.vue'

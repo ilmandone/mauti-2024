@@ -1,20 +1,30 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { inject, onMounted, ref } from 'vue'
+import { ADD_TO_OBSERVER, type IAddToObserver } from '@components/renderless/r-int-observer'
+
+const svg = ref<HTMLElement>()
+const section1 = ref<HTMLElement>()
+const section2 = ref<HTMLElement>()
+const section3 = ref<HTMLElement>()
+
+const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
+
+onMounted(() => {
+    addToObserver([svg.value, section1.value, section2.value, section3.value] as HTMLElement[])
+})
+</script>
 
 <template>
     <section class="wido">
         <header>
-            <h2 class="v-hidden">
-                What <br />
-                I <br />
-                Do
-            </h2>
+            <h2 class="v-hidden">What I Do</h2>
 
-            <svg class="wido__svg" viewBox="0 0 674 695">
+            <svg ref="svg" class="wido__svg" viewBox="0 0 674 695">
                 <use xlink:href="/vectors/what-i-do.svg#wid"></use>
             </svg>
         </header>
 
-        <section class="wido__single">
+        <section class="wido__single" ref="section1">
             <h3>Front-end development</h3>
             <p>
                 I craft effective long lasting front-end solution for E-Commerce, SPA/MPA, portals, CMS, back office,
@@ -25,7 +35,7 @@
             </p>
         </section>
 
-        <section class="wido__single">
+        <section class="wido__single" ref="section2">
             <h3>UX / UI Design</h3>
             <p>
                 I design UX experience for all kind of platform with particolar care for information architecture,
@@ -34,7 +44,7 @@
             </p>
         </section>
 
-        <section class="wido__single">
+        <section class="wido__single" ref="section3">
             <h3>3D</h3>
             <p>
                 I create 3D models and scenes for both real time and production rendering, from modeling to texturing
@@ -50,9 +60,11 @@
 @use '@styles/typo';
 @use '@styles/utils';
 
+@use './scss/common-animations';
+@use './scss/s-what-i-do';
+
 .wido {
     padding: 20vh 2rem;
-    //background-color: darkcyan;
 
     &__single {
         margin: 2rem 0;
@@ -64,9 +76,28 @@
 
     &__svg {
         height: 100%;
-        fill: var(--color-emphasize);
+
+        stroke: var(--color-emphasize);
+        stroke-width: 4px;
+        stroke-linejoin: round;
+        stroke-dasharray: 0 800;
+
+        fill: transparent;
 
         @include utils.baseTransition(fill);
+
+        &.on-screen {
+            animation: k-what-i-do-show 2.5s ease-out forwards;
+            animation-delay: 0.25s;
+        }
+    }
+
+    section {
+        opacity: 0;
+
+        &.on-screen {
+            @include common-animations.use('fade-in', 0.75s, 0.1s);
+        }
     }
 
     h3 {
