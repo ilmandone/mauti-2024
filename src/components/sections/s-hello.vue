@@ -8,7 +8,8 @@ const helloSub = ref<HTMLElement>()
 const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
 
 onMounted(() => {
-    addToObserver([hello.value, helloSub.value] as HTMLElement[])})
+    addToObserver([hello.value, helloSub.value] as HTMLElement[])
+})
 </script>
 
 <template>
@@ -52,7 +53,7 @@ onMounted(() => {
         @include utils.baseTransition(fill, stroke);
 
         &.on-screen {
-            animation: k-hello-show 0.75s ease-out forwards;
+            animation: k-hello-show 1.5s ease-out forwards;
             animation-delay: 0.25s;
         }
     }

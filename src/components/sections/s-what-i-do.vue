@@ -30,7 +30,7 @@ onMounted(() => {
                 I craft effective long lasting front-end solution for E-Commerce, SPA/MPA, portals, CMS, back office,
                 PWA and more. I design f/e architecture to interact with back-end services, minimize dependencies and
                 improve performance. I help to define teams workflow to match CI/CD infrastructures and take care of the
-                quality of the code. I also develope solution with all the major front-end frameworks and no, I don’t
+                quality of the code. I also develop solution with all the major front-end frameworks and no, I don’t
                 want to list all of them
             </p>
         </section>
@@ -84,10 +84,10 @@ onMounted(() => {
 
         fill: transparent;
 
-        @include utils.baseTransition(fill);
+        @include utils.baseTransition(fill, stroke);
 
         &.on-screen {
-            animation: k-what-i-do-show 2.5s ease-out forwards;
+            animation: k-what-i-do-show 2s ease-out forwards;
             animation-delay: 0.25s;
         }
     }

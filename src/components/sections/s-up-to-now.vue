@@ -1,16 +1,29 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { inject, onMounted, ref } from 'vue'
+import { ADD_TO_OBSERVER, type IAddToObserver } from '@components/renderless/r-int-observer'
+
+const svg = ref<HTMLElement>()
+const section1 = ref<HTMLElement>()
+const section2 = ref<HTMLElement>()
+
+const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
+
+onMounted(() => {
+    addToObserver([svg.value, section1.value, section2.value] as HTMLElement[])
+})
+</script>
 
 <template>
     <section class="utn">
         <header class="utn__header">
             <h2 class="v-hidden">Up to now</h2>
-            <svg class="utn__svg" viewBox="0 0 1581 354">
+            <svg class="utn__svg" viewBox="0 0 1581 354" ref="svg">
                 <use xlink:href="/vectors/up-to-now.svg#utn"></use>
             </svg>
         </header>
 
         <div class="contents">
-            <section>
+            <section ref="section1">
                 <header class="v-hidden">
                     <h3>My Career</h3>
                 </header>
@@ -45,7 +58,7 @@
                 </ul>
             </section>
 
-            <section>
+            <section ref="section2">
                 <header>
                     <h3>Skills and tools</h3>
                 </header>
@@ -74,9 +87,11 @@
 @use '@styles/typo';
 @use '@styles/utils';
 
+@use './scss/common-animations';
+@use './scss/s-up-to-now';
+
 section.utn {
     padding: 20vh 0;
-    //background-color: mediumpurple;
 
     &__ header {
         width: 99vw;
@@ -84,9 +99,20 @@ section.utn {
 
     .utn__svg {
         width: 100%;
-        fill: var(--color-emphasize);
 
-        @include utils.baseTransition(fill);
+        stroke: var(--color-emphasize);
+        stroke-width: 4px;
+        stroke-linejoin: round;
+        stroke-dasharray: 0 800;
+
+        fill: transparent;
+
+        @include utils.baseTransition(fill, stroke);
+
+        &.on-screen {
+            animation: k-up-to-now-show 1.5s ease-out forwards;
+            animation-delay: 0.25s;
+        }
     }
 
     .contents {
@@ -99,6 +125,11 @@ section.utn {
     .contents > section {
         flex: 1;
         margin: 1rem 0;
+        opacity: 0;
+
+        &.on-screen {
+            @include common-animations.use('fade-in', 0.75s, 0.1s);
+        }
 
         header:not(.v-hidden) {
             margin-bottom: 1rem;
