@@ -8,9 +8,7 @@ const helloSub = ref<HTMLElement>()
 const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
 
 onMounted(() => {
-    addToObserver(hello.value as HTMLElement)
-    addToObserver(helloSub.value as HTMLElement)
-})
+    addToObserver([hello.value, helloSub.value] as HTMLElement[])})
 </script>
 
 <template>

@@ -21,9 +21,9 @@ const createObserver = (): IntersectionObserver => {
         }
     )
 }
-const addToObserver = (el: HTMLElement) => {
+const addToObserver = (els: HTMLElement[]) => {
     if (!observer) observer = createObserver()
-    observer.observe(el)
+    els.forEach((el) => (observer as IntersectionObserver).observe(el))
 }
 
 // Create the provider to set el in observer

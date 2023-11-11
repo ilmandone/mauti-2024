@@ -9,8 +9,7 @@ const sideLine = ref<HTMLElement>()
 const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
 
 onMounted(() => {
-    addToObserver(intro.value as HTMLElement)
-    addToObserver(sideLine.value as HTMLElement)
+    addToObserver([intro.value, sideLine.value] as HTMLElement[])
 })
 </script>
 
