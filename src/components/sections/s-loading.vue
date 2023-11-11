@@ -104,7 +104,10 @@ onMounted(() => {
 <style scoped lang="scss">
 @use '@styles/utils';
 @use '@styles/typo';
-@use './scss/S-Loading.animations';
+
+// Animations
+@use 'scss/s-loading.animations';
+
 .wrapper {
     position: absolute;
     top: 0;
@@ -144,7 +147,7 @@ onMounted(() => {
             stroke: var(--color-bg);
 
             &.show {
-                @include S-Loading.use('logo', 1.25s);
+                animation: k-logo 1.25s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
             }
         }
 
@@ -164,7 +167,8 @@ onMounted(() => {
             }
 
             &.show {
-                @include S-Loading.use('loading', 1s, 0.2s);
+                animation: k-loading 1s cubic-bezier(0.96, -0.01, 0.36, 1) forwards;
+                animation-delay: 0.2s;
             }
         }
     }
