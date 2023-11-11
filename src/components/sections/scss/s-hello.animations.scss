@@ -1,0 +1,16 @@
+@keyframes k-hello-show {
+    0% {
+        stroke-dasharray: 0 1500;
+        fill: transparent;
+    }
+
+    50% {
+        stroke-dasharray: 1500 0;
+        fill: transparent;
+    }
+
+    100% {
+        fill: var(--color-emphasize);
+        stroke-dasharray: 1500 0;
+    }
+}
