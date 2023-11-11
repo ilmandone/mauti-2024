@@ -6,9 +6,7 @@ const el = ref()
 
 const addToObserver = inject(ADD_TO_OBSERVER) as IAddToObserver
 
-onMounted(() => {
-    addToObserver(el.value)
-})
+onMounted(() => addToObserver(el.value))
 </script>
 
 <template>
@@ -40,6 +38,9 @@ onMounted(() => {
     .hello__svg {
         width: 100%;
         fill: var(--color-emphasize);
+        stroke: black; // var(--color-emphasize);
+        stroke-width: 5px;
+        stroke-linejoin: round;
 
         @include utils.baseTransition(fill);
     }
