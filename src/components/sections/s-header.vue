@@ -24,7 +24,20 @@ onMounted(() => {
 
 <template>
     <header>
-        <UISwitchButton :is-checked="theme === 'dark'" @checked="checked" />
+        <UISwitchButton :is-checked="theme === 'dark'" @checked="checked">
+            <template #icon>
+                <div class="icon-wrapper">
+                    <svg class="icon" viewBox="0 0 512 512" :class="{ toggle: theme === 'light' }">
+                        <use xlink:href="/vectors/dark.svg#icon"></use>
+                    </svg>
+
+                    <svg class="icon" viewBox="0 0 512 512" :class="{ toggle: theme === 'light' }">
+                        <use xlink:href="/vectors/light.svg#icon"></use>
+                    </svg>
+                </div>
+            </template>
+        </UISwitchButton>
+
         <aside class="current-time" aria-label="current time">{{ time }}</aside>
     </header>
 </template>
@@ -50,6 +63,31 @@ header {
 
     .current-time {
         display: none;
+    }
+
+    .icon-wrapper {
+        width: 100%;
+        height: 100%;
+        background-color: var(--color-bg);
+
+        overflow: hidden;
+
+        border-radius: 50%;
+
+        transition: background-color 0.4s ease-out;
+    }
+
+    .icon {
+        fill: var(--color-main);
+        display: block;
+
+        transition-property: fill, transform;
+        transition-duration: 0.4s;
+        transition-timing-function: ease-out;
+
+        &.toggle {
+            transform: translateY(-100%);
+        }
     }
 
     @include utils.media('t') {

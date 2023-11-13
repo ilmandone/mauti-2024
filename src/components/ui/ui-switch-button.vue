@@ -25,10 +25,23 @@ watch(
 <template>
     <button :class="{ checked }" type="button" role="switch" :aria-checked="checked" @click="click">
         <span class="v-hidden">Theme switch</span>
+        <!-- Slot for extra icon -->
+        <span class="icon">
+            <slot name="icon"></slot>
+        </span>
     </button>
 </template>
 
 <style scoped lang="scss">
+.icon {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    height: 1.5rem;
+    width: 1.5rem;
+
+    display: block;
+}
 button[role='switch'] {
     position: relative;
     width: 3rem;
