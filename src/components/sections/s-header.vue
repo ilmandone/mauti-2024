@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import UISwitchButton from '@components/ui/ui-switch-button.vue'
 import { type Themes, useMainStore } from '@stores/main'
 import { storeToRefs } from 'pinia'
@@ -14,13 +14,6 @@ const { theme } = storeToRefs(store)
 const checked = (e: Themes) => {
     setTheme(e ? 'dark' : 'light')
 }
-
-/**
- * Theme icon URL based on the current theme
- */
-const themeIconURL = computed(() => {
-    return `/vectors/${theme.value}.svg#ico;n`
-})
 
 onMounted(() => {
     intervalTime.value = window.setInterval(() => {
