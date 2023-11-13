@@ -89,7 +89,7 @@ onMounted(() => {
         :class="{ out }"
         class="wrapper"
         ref="wrapperRef"
-        :style="{ borderWidth: `${displayed * 0.02}vw` }"
+        :style="{ borderWidth: `${displayed * 0.01}vw` }"
     >
         <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
             <use xlink:href="/vectors/logo.svg#logo"></use>
@@ -98,6 +98,7 @@ onMounted(() => {
         <svg id="loading" viewBox="0 0 185 80" ref="loadingRef" :class="{ show }">
             <text y="76" text-anchor="middle" x="50%">{{ displayed }}</text>
         </svg>
+        <aside class="copyright">(c) Copyright 2023 - Andrea Mandini</aside>
     </div>
 </template>
 
@@ -109,11 +110,11 @@ onMounted(() => {
 @use 'scss/s-loading.animations';
 
 .wrapper {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100%;
 
     box-sizing: border-box;
 
@@ -123,11 +124,6 @@ onMounted(() => {
 
     background-color: var(--color-emphasize);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
     transition:
         transform 1s cubic-bezier(0.96, -0.01, 0.36, 1),
         border-width 0.1s ease-out;
@@ -135,10 +131,16 @@ onMounted(() => {
     @include utils.zIndex('loader');
 
     svg {
-        transition: transform 0.9s cubic-bezier(0.96, -0.01, 0.36, 1);
+        transition: transform 1s cubic-bezier(0.96, -0.01, 0.36, 1);
 
         &#logo {
-            width: 86vw;
+            position: absolute;
+            top: 50%;
+            left: 0;
+
+            width: 100vw;
+
+            transform: translateY(-50%);
 
             fill: transparent;
 
@@ -152,9 +154,10 @@ onMounted(() => {
         }
 
         &#loading {
-            width: 25vw;
-            margin-top: 2vh;
-            margin-left: 35vw;
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 15vw;
             opacity: 0;
 
             stroke-width: 2px;
@@ -173,24 +176,45 @@ onMounted(() => {
         }
     }
 
+    .copyright {
+        position: absolute;
+        left: 50%;
+        bottom: 1rem;
+
+        transform: translateX(-50%);
+
+        margin: 0 auto;
+        text-align: center;
+        color: var(--color-bg);
+
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
     &.out {
         transform: translateX(100vw);
-        svg {
-            transform: translateX(30vw);
+        svg#logo {
+            transform: translate(50vw, -50%);
         }
     }
 
     @include utils.media('t') {
         svg {
             &#logo {
-                width: 65vw;
+                left: 0;
+                width: 75vw;
                 stroke-width: 6px;
             }
 
             &#loading {
-                margin-left: 45vw;
-                width: 18vw;
+                width: 10vw;
             }
+        }
+
+        .copyright {
+            left: auto;
+            right: 2rem;
+            transform: none;
         }
     }
 
@@ -198,45 +222,34 @@ onMounted(() => {
         flex-direction: row;
         svg {
             &#logo {
-                width: 48vw;
-                margin: 0 12vw 0 0;
+                left: 4vw;
+                width: 55vw;
                 stroke-width: 8px;
             }
 
             &#loading {
-                position: absolute;
-                bottom: 6vh;
-                right: 6vw;
-                margin: 0;
-                width: 10vw;
+                top: auto;
+                bottom: 2rem;
+                width: 5vw;
             }
         }
-    }
 
-    @include utils.media('dm') {
-        svg {
-            &#logo {
-                width: 48vw;
-                margin: 0 12vw 0 0;
-                stroke-width: 10px;
-            }
-
-            &#loading {
-                width: 8.5vw;
-            }
+        .copyright {
+            bottom: 1.5rem;
+            left: 2rem;
+            right: auto;
         }
     }
 
     @include utils.media('dl') {
         svg {
             &#logo {
-                width: 38vw;
-                margin: 0 15vw 0 0;
+                width: 45vw;
                 stroke-width: 4px;
             }
 
             &#loading {
-                width: 5vw;
+                width: 3vw;
             }
         }
     }
