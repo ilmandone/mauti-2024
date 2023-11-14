@@ -1,8 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useMainStore } from '@stores/main'
 
 const props = defineProps(['progress', 'mainHeight'])
 
+const emit = defineEmits(['deltaDrag'])
+
+const scroller = ref<HTMLElement>()
+const startY = ref(0)
+
+const store = useMainStore()
+const { isTouch } = store
+
+//#region Scroller
 const height = computed<number>(() => {
     let h = 200
     if (props.mainHeight) {
@@ -22,9 +32,38 @@ const delta = computed(() => {
 
     return value
 })
+//#endregion
+
+//#region Drag
+const mouseDownOnScroller = (e: MouseEvent) => {
+    e.preventDefault()
+    startY.value = e.clientY
+
+    scroller.value?.addEventListener('mousemove', mouseMoveOnScroller)
+    scroller.value?.addEventListener('mouseup', mouseUpOnScroller)
+    scroller.value?.addEventListener('mouseleave', mouseUpOnScroller)
+}
+
+const mouseMoveOnScroller = (e: MouseEvent) => {
+    e.preventDefault()
+    emit('deltaDrag', e.clientY - startY.value)
+}
+
+const mouseUpOnScroller = () => {
+    scroller.value?.removeEventListener('mousemove', mouseMoveOnScroller)
+    scroller.value?.removeEventListener('mouseup', mouseUpOnScroller)
+    scroller.value?.removeEventListener('mouseleave', mouseUpOnScroller)
+}
+
+//#endregion
+
+onMounted(() => {
+    if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+})
 </script>
 <template>
     <div
+        ref="scroller"
         class="scroller"
         aria-hidden="true"
         :style="{ transform: `translate3d(0, ${delta}px, 0)`, height: `${height}px` }"
