@@ -27,11 +27,16 @@ const scrollProgress = computed<number>(() => {
 
 //#region Scroll
 const updateScroll = (v: number) => {
+    console.log('UPDATESCROLL', v)
     scrollValue.value = v
 }
 
 const getScrollValue = (): number => {
     return scrollValue.value
+}
+
+const updateByDrag = (v: number) => {
+    scrollValue.value -= v
 }
 //#endregion
 
@@ -75,7 +80,7 @@ onUnmounted(() => {
         </RIntObserver>
     </main>
 
-    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />
+    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" @delta-drag="updateByDrag" />
 </template>
 
 <style lang="scss" scoped>

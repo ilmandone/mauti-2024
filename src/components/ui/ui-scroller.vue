@@ -13,6 +13,9 @@ const store = useMainStore()
 const { isTouch } = store
 
 //#region Scroller
+/**
+ * Get the scroller height
+ */
 const height = computed<number>(() => {
     let h = 200
     if (props.mainHeight) {
@@ -21,13 +24,17 @@ const height = computed<number>(() => {
     return h
 })
 
-const delta = computed(() => {
+/**
+ * Get the delta position for scroller
+ */
+const delta = computed<number>(() => {
     let value = 0
     if (props.progress) {
         let delta = ~~props.progress - props.progress
         if (delta < 0) delta += 1
 
         value = delta * (window.innerHeight - height.value)
+        console.log(value)
     }
 
     return value
@@ -46,7 +53,10 @@ const mouseDownOnScroller = (e: MouseEvent) => {
 
 const mouseMoveOnScroller = (e: MouseEvent) => {
     e.preventDefault()
-    emit('deltaDrag', e.clientY - startY.value)
+    const deltaBase = e.clientY - startY.value
+    console.log(deltaBase / window.innerHeight)
+    // Should passa a percentage value between 0 and 1 reflecting
+    emit('deltaDrag', deltaBase / window.innerHeight)
 }
 
 const mouseUpOnScroller = () => {
