@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps(['progress', 'mainHeight'])
 
@@ -14,12 +14,12 @@ const height = computed<number>(() => {
 const delta = computed(() => {
     let value = 0
     if (props.progress) {
-        let delta = ~~props.progress - props.progress        
-        if(delta < 0) delta += 1
+        let delta = ~~props.progress - props.progress
+        if (delta < 0) delta += 1
 
         value = delta * (window.innerHeight - height.value)
     }
-    
+
     return value
 })
 </script>
@@ -42,7 +42,8 @@ const delta = computed(() => {
     height: 4rem;
 
     background-color: transparent;
-    pointer-events: none;
+
+    @include utils.zIndex('scroller');
 
     &::after {
         content: '';
