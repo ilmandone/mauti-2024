@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useMainStore } from '@stores/main'
+import debounce from 'lodash.debounce'
 
 const props = defineProps(['progress', 'mainHeight'])
-
-const emit = defineEmits(['deltaDrag'])
+// const emit = defineEmits(['deltaDrag'])
 
 const scroller = ref<HTMLElement>()
-const startY = ref(0)
+// const startY = ref(0)
 
 const store = useMainStore()
-const { isTouch } = store
+// const { isTouch } = store
 
 //#region Scroller
 /**
@@ -34,7 +34,6 @@ const delta = computed<number>(() => {
         if (delta < 0) delta += 1
 
         value = delta * (window.innerHeight - height.value)
-        console.log(value)
     }
 
     return value
@@ -42,23 +41,36 @@ const delta = computed<number>(() => {
 //#endregion
 
 //#region Drag
-const mouseDownOnScroller = (e: MouseEvent) => {
+/*const mouseDownOnScroller = (e: MouseEvent) => {
     e.preventDefault()
-    startY.value = e.clientY
+    startY.value = e.clientY - delta.value
 
-    scroller.value?.addEventListener('mouseleave', mouseOutFromScroller)
-    scroller.value?.addEventListener('mouseup', mouseOutFromScroller)
+    window.addEventListener('mouseleave', mouseLeaveOrUpOnWindow)
+    window.addEventListener('mouseup', mouseLeaveOrUpOnWindow)
+    window.addEventListener('mousemove', mouseMoveOnWindow)
+
+    scroller.value?.removeEventListener('mousedown', mouseDownOnScroller)
 }
 
-const mouseOutFromScroller = (e: MouseEvent) => {
-    scroller.value?.removeEventListener('mouseleave', mouseOutFromScroller)
-    scroller.value?.removeEventListener('mouseup', mouseOutFromScroller)
+const mouseMoveOnWindow = (e: MouseEvent) => {
+    const val = startY.value - e.clientY
+    emit('deltaDrag', val)
 }
+
+const mouseLeaveOrUpOnWindow = (e: MouseEvent) => {
+    window.removeEventListener('mouseleave', mouseLeaveOrUpOnWindow)
+    window.removeEventListener('mouseup', mouseLeaveOrUpOnWindow)
+    window.removeEventListener('mousemove', mouseMoveOnWindow)
+
+    scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+}*/
+
 //#endregion
 
-onMounted(() => {
+// TODO: Da riprendere con calma quando ho voglia di metterci la testa
+/*onMounted(() => {
     if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
-})
+})*/
 </script>
 <template>
     <div
