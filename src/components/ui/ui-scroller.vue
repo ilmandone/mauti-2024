@@ -42,35 +42,22 @@ const delta = computed<number>(() => {
 //#endregion
 
 //#region Drag
-/*
 const mouseDownOnScroller = (e: MouseEvent) => {
     e.preventDefault()
     startY.value = e.clientY
 
-    scroller.value?.addEventListener('mousemove', mouseMoveOnScroller)
-    scroller.value?.addEventListener('mouseup', mouseUpOnScroller)
-    scroller.value?.addEventListener('mouseleave', mouseUpOnScroller)
+    scroller.value?.addEventListener('mouseleave', mouseOutFromScroller)
+    scroller.value?.addEventListener('mouseup', mouseOutFromScroller)
 }
 
-const mouseMoveOnScroller = (e: MouseEvent) => {
-    e.preventDefault()
-    const deltaBase = e.clientY - startY.value
-    console.log(deltaBase / window.innerHeight)
-    // Should passa a percentage value between 0 and 1 reflecting
-    emit('deltaDrag', deltaBase / window.innerHeight)
+const mouseOutFromScroller = (e: MouseEvent) => {
+    scroller.value?.removeEventListener('mouseleave', mouseOutFromScroller)
+    scroller.value?.removeEventListener('mouseup', mouseOutFromScroller)
 }
-
-const mouseUpOnScroller = () => {
-    scroller.value?.removeEventListener('mousemove', mouseMoveOnScroller)
-    scroller.value?.removeEventListener('mouseup', mouseUpOnScroller)
-    scroller.value?.removeEventListener('mouseleave', mouseUpOnScroller)
-}
-*/
-
 //#endregion
 
 onMounted(() => {
-    // if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
 })
 </script>
 <template>
