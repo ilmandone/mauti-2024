@@ -42,6 +42,7 @@ const delta = computed<number>(() => {
 //#endregion
 
 //#region Drag
+/*
 const mouseDownOnScroller = (e: MouseEvent) => {
     e.preventDefault()
     startY.value = e.clientY
@@ -64,11 +65,12 @@ const mouseUpOnScroller = () => {
     scroller.value?.removeEventListener('mouseup', mouseUpOnScroller)
     scroller.value?.removeEventListener('mouseleave', mouseUpOnScroller)
 }
+*/
 
 //#endregion
 
 onMounted(() => {
-    if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    // if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
 })
 </script>
 <template>
@@ -94,6 +96,9 @@ onMounted(() => {
 
     @include utils.zIndex('scroller');
 
+    transition: width 0.25s ease-in-out;
+    will-change: width;
+
     &::after {
         content: '';
         position: absolute;
@@ -105,6 +110,24 @@ onMounted(() => {
         border-radius: 0.15rem;
 
         background-color: var(--color-main);
+
+        transition-property: width, left, border-radius;
+        transition-duration: 0.25s;
+        transition-timing-function: ease-in-out;
+
+        will-change: width, left, border-radius;
+    }
+
+    @include utils.media('mouse') {
+        &:hover {
+            width: 1.4rem;
+
+            &::after {
+                left: 0.15rem;
+                width: 0.7rem;
+                border-radius: 0.35rem;
+            }
+        }
     }
 
     @include utils.media('dm') {
