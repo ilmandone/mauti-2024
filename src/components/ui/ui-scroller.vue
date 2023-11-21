@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useMainStore } from '@stores/main'
-import debounce from 'lodash.debounce'
 
 const props = defineProps(['progress', 'mainHeight'])
 const emit = defineEmits(['deltaDrag'])
