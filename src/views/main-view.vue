@@ -16,6 +16,7 @@ import { SectionTranslationDirective as vSectionTranslation } from '@/directives
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
+const noTransition = ref<boolean>(false)
 
 const props = defineProps({
     loadEnd: { default: false }
@@ -28,10 +29,17 @@ const scrollProgress = computed<number>(() => {
 //#region Scroll
 const updateScroll = (v: number) => {
     scrollValue.value = v
+    noTransition.value = false
 }
 
 const getScrollValue = (): number => {
     return scrollValue.value
+}
+
+const updateByDrag = (v: number) => {
+    const vToScreen = v * (mainHeight.value / window.innerHeight)
+    scrollValue.value -= vToScreen
+    noTransition.value = true
 }
 //#endregion
 
@@ -64,7 +72,12 @@ onUnmounted(() => {
     <main
         ref="main"
         v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
-        :style="{ transform: `translate3d(0, ${scrollValue}px, 0)` }"
+        :style="{
+            transform: `translate3d(0, ${scrollValue}px, 0)`
+        }"
+        :class="{
+            'no-transition': noTransition
+        }"
     >
         <RIntObserver>
             <SHello v-section-translation="{ scrollValue, mainHeight }" />
@@ -75,7 +88,7 @@ onUnmounted(() => {
         </RIntObserver>
     </main>
 
-    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" />
+    <UIScroller :progress="scrollProgress" :mainHeight="mainHeight" @delta-drag="updateByDrag" />
 </template>
 
 <style lang="scss" scoped>
@@ -86,5 +99,9 @@ main {
     width: 100%;
 
     transition: transform 1.5s cubic-bezier(0, 0.89, 0.41, 1.02);
+
+    &.no-transition {
+        transition: none;
+    }
 }
 </style>

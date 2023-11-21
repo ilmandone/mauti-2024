@@ -89,7 +89,10 @@ onMounted(() => {
         :class="{ out }"
         class="wrapper"
         ref="wrapperRef"
-        :style="{ borderWidth: `${displayed * 0.01}vw` }"
+        :style="{
+            borderWidth: `${displayed * 0.01}vw`,
+            borderRadius: `${displayed * 0.02}rem`
+        }"
     >
         <svg id="logo" viewBox="0 0 1080 640" :class="{ show }">
             <use xlink:href="/vectors/logo.svg#logo"></use>

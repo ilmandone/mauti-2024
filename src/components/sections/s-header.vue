@@ -49,13 +49,12 @@ onMounted(() => {
 header {
     position: absolute;
     width: 100vw;
-
     box-sizing: border-box;
 
     padding: 2rem 2rem;
 
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
 
@@ -66,12 +65,12 @@ header {
     }
 
     .icon-wrapper {
+        position: absolute;
         width: 100%;
         height: 100%;
         background-color: var(--color-bg);
 
         overflow: hidden;
-
         border-radius: 50%;
 
         transition: background-color 0.4s ease-out;
@@ -92,6 +91,11 @@ header {
 
     @include utils.media('t') {
         padding: 2.5rem 3rem;
+        flex-direction: row-reverse;
+
+        .icon-wrapper {
+            left: -5.5rem;
+        }
     }
 
     @include utils.media('tl') {

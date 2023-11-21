@@ -35,7 +35,7 @@ watch(
 <style scoped lang="scss">
 .icon {
     position: absolute;
-    left: -2rem;
+    right: -2rem;
     top: 0;
     height: 1.5rem;
     width: 1.5rem;
