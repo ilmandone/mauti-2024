@@ -4,13 +4,13 @@ import { useMainStore } from '@stores/main'
 import debounce from 'lodash.debounce'
 
 const props = defineProps(['progress', 'mainHeight'])
-// const emit = defineEmits(['deltaDrag'])
+const emit = defineEmits(['deltaDrag'])
 
 const scroller = ref<HTMLElement>()
-// const startY = ref(0)
+const downY = ref(0)
 
 const store = useMainStore()
-// const { isTouch } = store
+const { isTouch } = store
 
 //#region Scroller
 /**
@@ -41,36 +41,34 @@ const delta = computed<number>(() => {
 //#endregion
 
 //#region Drag
-/*const mouseDownOnScroller = (e: MouseEvent) => {
-    e.preventDefault()
-    startY.value = e.clientY - delta.value
+const mouseDownOnScroller = (e: MouseEvent) => {
+    downY.value = e.clientY
 
-    window.addEventListener('mouseleave', mouseLeaveOrUpOnWindow)
-    window.addEventListener('mouseup', mouseLeaveOrUpOnWindow)
-    window.addEventListener('mousemove', mouseMoveOnWindow)
-
-    scroller.value?.removeEventListener('mousedown', mouseDownOnScroller)
+    window.addEventListener('mousemove', mouseMoveInWindow)
+    window.addEventListener('mouseup', mouseExitFromWindow)
+    window.addEventListener('mouseleave', mouseExitFromWindow)
 }
 
-const mouseMoveOnWindow = (e: MouseEvent) => {
-    const val = startY.value - e.clientY
-    emit('deltaDrag', val)
+const mouseExitFromWindow = () => {
+    window.removeEventListener('mousemove', mouseMoveInWindow)
+    window.removeEventListener('mouseup', mouseExitFromWindow)
+    window.removeEventListener('mouseleave', mouseExitFromWindow)
 }
 
-const mouseLeaveOrUpOnWindow = (e: MouseEvent) => {
-    window.removeEventListener('mouseleave', mouseLeaveOrUpOnWindow)
-    window.removeEventListener('mouseup', mouseLeaveOrUpOnWindow)
-    window.removeEventListener('mousemove', mouseMoveOnWindow)
-
-    scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
-}*/
+const mouseMoveInWindow = (e: MouseEvent) => {
+    const delta = e.clientY - downY.value
+    emit('deltaDrag', delta)
+    window.setTimeout(() => {
+        downY.value = e.clientY
+    })
+}
 
 //#endregion
 
 // TODO: Da riprendere con calma quando ho voglia di metterci la testa
-/*onMounted(() => {
+onMounted(() => {
     if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
-})*/
+})
 </script>
 <template>
     <div
@@ -101,10 +99,10 @@ const mouseLeaveOrUpOnWindow = (e: MouseEvent) => {
     &::after {
         content: '';
         position: absolute;
-        top: 0.25rem;
+        top: 0.5rem;
         left: 0.4rem;
-        width: 0.2rem;
-        height: calc(100% - 0.5rem);
+        width: 0.1rem;
+        height: calc(100% - 1rem);
 
         border-radius: 0.15rem;
 
@@ -133,17 +131,15 @@ const mouseLeaveOrUpOnWindow = (e: MouseEvent) => {
         &::after {
             left: 0.35rem;
             width: 0.3rem;
-
             border-radius: 0.175rem;
         }
     }
 
-    @include utils.media('dm') {
+    @include utils.media('dl') {
         &::after {
-            left: 0.25rem;
-            width: 0.5rem;
-
-            border-radius: 0.25rem;
+            left: 0.3rem;
+            width: 0.4rem;
+            border-radius: 0.2rem;
         }
     }
 }
