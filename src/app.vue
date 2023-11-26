@@ -12,7 +12,8 @@ const { setTheme } = store
 const { theme } = storeToRefs(store)
 
 const loadingProgress = ref<number>(0)
-const startLoading = ref<boolean>(false)
+const loadingStart = ref<boolean>(false)
+const loadingEnd = ref<boolean>(false)
 
 onMounted(() => {
     const hour = new Date().getHours()
@@ -26,10 +27,14 @@ watch(theme, (v, p) => {
 </script>
 
 <template>
-    <SBackground :start-loading="startLoading" @load-progress="(v: number) => (loadingProgress = v)" />
+    <SBackground :start-loading="loadingStart" @load-progress="(v: number) => (loadingProgress = v)" />
     <SHeader />
-    <MainView :load-end="loadingProgress === 100" />
-    <SLoading :progress="loadingProgress" @start-loading="(v: boolean) => (startLoading = v)" />
+    <MainView :load-end="loadingProgress === 100" :cover-hidden="loadingEnd" />
+    <SLoading
+        :progress="loadingProgress"
+        @loading-start="(v: boolean) => (loadingStart = v)"
+        @loading-end="(value: boolean) => (loadingEnd = value)"
+    />
 </template>
 
 <style scoped></style>

@@ -19,7 +19,8 @@ const mainHeight = ref<number>(0)
 const noTransition = ref<boolean>(false)
 
 const props = defineProps({
-    loadEnd: { default: false }
+    loadEnd: { default: false },
+    coverHidden: { default: false }
 })
 
 const scrollProgress = computed<number>(() => {
@@ -54,7 +55,9 @@ const onWindowResize = debounce(updateMainHeight, 150)
 //#region Hooks
 watch(
     () => props.loadEnd,
-    () => updateMainHeight()
+    () => {
+        updateMainHeight()
+    }
 )
 
 onMounted(() => {
@@ -71,7 +74,7 @@ onUnmounted(() => {
 <template>
     <main
         ref="main"
-        v-scroll-detect="{ getScroll: getScrollValue, cbFn: updateScroll }"
+        v-scroll-detect="{ enabled: props.coverHidden, getScroll: getScrollValue, cb: updateScroll }"
         :style="{
             transform: `translate3d(0, ${scrollValue}px, 0)`
         }"
