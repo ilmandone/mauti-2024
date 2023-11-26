@@ -5,7 +5,8 @@ const END_WAIT = 500
 
 const props = defineProps(['progress'])
 const emits = defineEmits<{
-    (event: 'startLoading', value: boolean): void
+    (event: 'loadingStart', value: boolean): void
+    (event: 'loadingEnd', value: boolean): void
 }>()
 
 const displayed = ref<number>(0)
@@ -49,7 +50,7 @@ const handleInterval = (): void => {
 
         // End preloading
         window.setTimeout(() => {
-            wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
+            wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this), { once: true })
             out.value = true
         }, END_WAIT)
     }
@@ -62,22 +63,23 @@ const handleInterval = (): void => {
  */
 const outComplete = () => {
     wrapperRef.value?.removeEventListener('transitionend', outComplete)
+    emits('loadingEnd', true)
     visible.value = false
 }
 
 /**
- * Start the interval and emits startLoading
- * @description The startLoading event will be captured by the background that will return the progress value
+ * Start the interval and emits loadingStart
+ * @description The loadingStart event will be captured by the background that will return the progress value
  */
-const startLoading = () => {
+const loadingStart = () => {
     startInterval()
-    emits('startLoading', true)
-    loadingRef.value?.removeEventListener('animationend', startLoading)
+    emits('loadingStart', true)
+    loadingRef.value?.removeEventListener('animationend', loadingStart)
 }
 
 onMounted(() => {
     window.setTimeout(() => {
-        loadingRef.value?.addEventListener('animationend', startLoading.bind(this))
+        loadingRef.value?.addEventListener('animationend', loadingStart.bind(this))
         show.value = true
     }, 0)
 })
@@ -225,7 +227,7 @@ onMounted(() => {
         flex-direction: row;
         svg {
             &#logo {
-                left: 4vw;
+                left: 7vw;
                 width: 55vw;
                 stroke-width: 8px;
             }
