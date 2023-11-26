@@ -101,7 +101,7 @@ main {
     left: 0;
     width: 100%;
 
-    transition: transform 1.5s cubic-bezier(0, 0.89, 0.41, 1.02);
+    transition: transform 1.2s cubic-bezier(0, 0.89, 0.41, 1.02);
 
     &.no-transition {
         transition: none;

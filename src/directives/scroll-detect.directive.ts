@@ -12,6 +12,7 @@ type ScrollDirective = Directive & {
     acceleration: number
     isTouch: boolean
     startY: number
+    originalY: number
 
     cb: (v: number) => void
     getScroll: () => number | void
@@ -29,6 +30,7 @@ export const ScrollDetectDirective: ScrollDirective = {
     acceleration: 0,
     isTouch: false,
     startY: 0,
+    originalY: 0,
 
     cb() {},
     enabled: false,
@@ -64,6 +66,7 @@ export const ScrollDetectDirective: ScrollDirective = {
      */
     onActionDown(e: TouchEvent) {
         if (ScrollDetectDirective.enabled) {
+            ScrollDetectDirective.originalY = e.targetTouches[0].clientY
             ScrollDetectDirective.startY = e.targetTouches[0].clientY - ScrollDetectDirective.startY
 
             window.addEventListener('touchmove', ScrollDetectDirective.onActionMove)
@@ -77,15 +80,16 @@ export const ScrollDetectDirective: ScrollDirective = {
      */
     onActionMove(e: TouchEvent) {
         const clientY = e.targetTouches[0].clientY
-        let val = 0
+        const val = clientY - ScrollDetectDirective.startY
 
-        val = clientY - ScrollDetectDirective.startY
-
-        ScrollDetectDirective.acceleration = ScrollDetectDirective.startY - clientY
         ScrollDetectDirective.cb(val)
+        ScrollDetectDirective.acceleration = (ScrollDetectDirective.originalY - clientY) * 0.25
     },
-    onActionUp() {
-        ScrollDetectDirective.startY = ScrollDetectDirective.getScroll() as number
+    onActionUp(e: TouchEvent) {
+        // Pass the actual scroll position that will be used for offset fix on down action
+        const finalScroll = (ScrollDetectDirective.getScroll() as number) - ScrollDetectDirective.acceleration
+        ScrollDetectDirective.cb(finalScroll)
+        ScrollDetectDirective.startY = finalScroll
 
         window.removeEventListener('touchmove', ScrollDetectDirective.onActionMove)
         window.removeEventListener('touchend', ScrollDetectDirective.onActionUp)
