@@ -48,10 +48,10 @@ const handleInterval = (): void => {
         clearInterval()
 
         // End preloading
-        window.setTimeout(() => {
+        /* window.setTimeout(() => {
             wrapperRef.value?.addEventListener('transitionend', outComplete.bind(this))
             out.value = true
-        }, END_WAIT)
+        }, END_WAIT)*/
     }
 }
 
@@ -225,7 +225,7 @@ onMounted(() => {
         flex-direction: row;
         svg {
             &#logo {
-                left: 4vw;
+                left: 7vw;
                 width: 55vw;
                 stroke-width: 8px;
             }
