@@ -83,13 +83,15 @@ export const ScrollDetectDirective: ScrollDirective = {
         const val = clientY - ScrollDetectDirective.startY
 
         ScrollDetectDirective.cb(val)
-        ScrollDetectDirective.acceleration = (ScrollDetectDirective.originalY - clientY) * 0.5
+        const delta = ScrollDetectDirective.originalY - clientY
+        ScrollDetectDirective.acceleration = Math.abs(delta) > 12 ? delta * 0.5 : 0
     },
     onActionUp() {
         // Pass the actual scroll position that will be used for offset fix on down action
-        const finalScroll = (ScrollDetectDirective.getScroll() as number) - ScrollDetectDirective.acceleration
-        ScrollDetectDirective.cb(finalScroll)
-        ScrollDetectDirective.startY = finalScroll
+        ScrollDetectDirective.startY =
+            (ScrollDetectDirective.getScroll() as number) - ScrollDetectDirective.acceleration
+        ScrollDetectDirective.cb(ScrollDetectDirective.startY)
+        ScrollDetectDirective.acceleration = 0
 
         window.removeEventListener('touchmove', ScrollDetectDirective.onActionMove)
         window.removeEventListener('touchend', ScrollDetectDirective.onActionUp)
