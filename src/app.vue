@@ -8,7 +8,7 @@ import SHeader from '@components/sections/s-header.vue'
 import SBackground from '@components/sections/s-background.vue'
 
 const store = useMainStore()
-const { setTheme } = store
+const { setTheme, setIsTouch } = store
 const { theme } = storeToRefs(store)
 
 const loadingProgress = ref<number>(0)
@@ -18,6 +18,7 @@ const loadingEnd = ref<boolean>(false)
 onMounted(() => {
     const hour = new Date().getHours()
     setTheme(hour > 6 && hour < 20 ? 'light' : 'dark')
+    setIsTouch(window.navigator.maxTouchPoints > 0)
 })
 
 watch(theme, (v, p) => {
