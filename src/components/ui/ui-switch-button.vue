@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useMainStore } from '@stores/main'
+
+const store = useMainStore()
+const { setDotVisible } = store
 
 const emits = defineEmits(['checked'])
 const props = defineProps({
@@ -23,7 +27,15 @@ watch(
 </script>
 
 <template>
-    <button :class="{ checked }" type="button" role="switch" :aria-checked="checked" @click="click">
+    <button
+        :class="{ checked }"
+        type="button"
+        role="switch"
+        :aria-checked="checked"
+        @click="click"
+        @mouseenter="() => setDotVisible(false)"
+        @mouseleave="() => setDotVisible(true)"
+    >
         <span class="v-hidden">Theme switch</span>
         <!-- Slot for extra icon -->
         <span class="icon">

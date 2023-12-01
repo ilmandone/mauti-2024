@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useMainStore } from '@stores/main'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps(['progress', 'mainHeight'])
 const emit = defineEmits(['deltaDrag'])
@@ -9,7 +10,8 @@ const scroller = ref<HTMLElement>()
 const downY = ref(0)
 
 const store = useMainStore()
-const { isTouch } = store
+const { isTouch } = storeToRefs(store)
+const { setDotVisible } = store
 
 //#region Scroller
 /**
@@ -64,9 +66,10 @@ const mouseMoveInWindow = (e: MouseEvent) => {
 
 //#endregion
 
-// TODO: Da riprendere con calma quando ho voglia di metterci la testa
 onMounted(() => {
-    if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    if (!isTouch.value) {
+        scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    }
 })
 </script>
 <template>
@@ -75,6 +78,8 @@ onMounted(() => {
         class="scroller"
         aria-hidden="true"
         :style="{ transform: `translate3d(0, ${delta}px, 0)`, height: `${height}px` }"
+        @mouseenter="() => setDotVisible(false)"
+        @mouseleave="() => setDotVisible(true)"
     ></div>
 </template>
 
@@ -107,7 +112,7 @@ onMounted(() => {
 
         background-color: var(--color-main);
 
-        transition-property: width, left, border-radius;
+        transition-property: width, left, border-radius, background-color;
         transition-duration: 0.25s;
         transition-timing-function: ease-in-out;
 
@@ -122,6 +127,8 @@ onMounted(() => {
                 left: 0.15rem;
                 width: 0.7rem;
                 border-radius: 0.35rem;
+
+                background-color: var(--color-emphasize);
             }
         }
     }
