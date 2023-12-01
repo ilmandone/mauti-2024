@@ -46,6 +46,8 @@ onUnmounted(() => {
     top: 0;
     left: 0;
 
+    pointer-events: none;
+
     @include utils.zIndex('dot');
 
     &__content {
