@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 const store = useMainStore()
 const { dotVisible } = storeToRefs(store)
 
-const dotRef = ref(null)
+const dotRef = ref<HTMLElement>()
 let target = { x: 0, y: 0 }
 let current = { x: 0, y: 0 }
 let interval = ref(0)
@@ -21,7 +21,7 @@ function onInterval() {
         y: current.y + (target.y - current.y) / 10
     }
 
-    dotRef.value.style.transform = `translate(${current.x}px, ${current.y}px)`
+    if (dotRef.value) dotRef.value.style.transform = `translate(${current.x}px, ${current.y}px)`
 }
 
 onMounted(() => {
