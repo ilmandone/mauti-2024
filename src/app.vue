@@ -6,10 +6,11 @@ import SLoading from '@components/sections/s-loading.vue'
 import MainView from '@/views/main-view.vue'
 import SHeader from '@components/sections/s-header.vue'
 import SBackground from '@components/sections/s-background.vue'
+import UiDot from '@components/ui/ui-dot.vue'
 
 const store = useMainStore()
 const { setTheme, setIsTouch } = store
-const { theme } = storeToRefs(store)
+const { theme, isTouch } = storeToRefs(store)
 
 const loadingProgress = ref<number>(0)
 const loadingStart = ref<boolean>(false)
@@ -36,6 +37,7 @@ watch(theme, (v, p) => {
         @loading-start="(v: boolean) => (loadingStart = v)"
         @loading-end="(value: boolean) => (loadingEnd = value)"
     />
+    <UiDot v-if="!isTouch" />
 </template>
 
 <style scoped></style>
