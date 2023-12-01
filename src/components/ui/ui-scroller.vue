@@ -66,9 +66,10 @@ const mouseMoveInWindow = (e: MouseEvent) => {
 
 //#endregion
 
-// TODO: Da riprendere con calma quando ho voglia di metterci la testa
 onMounted(() => {
-    if (!isTouch) scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    if (!isTouch.value) {
+        scroller.value?.addEventListener('mousedown', mouseDownOnScroller)
+    }
 })
 </script>
 <template>
