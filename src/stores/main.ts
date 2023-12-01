@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export type Themes = 'light' | 'dark'
 
 export const useMainStore = defineStore('main', () => {
+    const dotVisible = ref(true)
     const isFocused = ref(false)
     const isTouch = ref(false)
     const theme = ref<Themes>('light')
@@ -20,5 +21,9 @@ export const useMainStore = defineStore('main', () => {
         isFocused.value = v
     }
 
-    return { isTouch, setIsTouch, theme, setTheme, isFocused, setIsFocused }
+    function setDotVisible(v: boolean) {
+        dotVisible.value = v
+    }
+
+    return { isTouch, setIsTouch, theme, setTheme, isFocused, setIsFocused, dotVisible, setDotVisible }
 })

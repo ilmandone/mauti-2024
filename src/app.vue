@@ -15,7 +15,6 @@ const { theme, isTouch, isFocused } = storeToRefs(store)
 const loadingProgress = ref<number>(0)
 const loadingStart = ref<boolean>(false)
 const loadingEnd = ref<boolean>(false)
-const windowIsFocused = ref<boolean>(true)
 
 function onWindowBlur() {
     setIsFocused(false)

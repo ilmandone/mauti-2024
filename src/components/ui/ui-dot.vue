@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useMainStore } from '@stores/main'
+import { storeToRefs } from 'pinia'
+
+const store = useMainStore()
+const { dotVisible } = storeToRefs(store)
 
 const dotRef = ref(null)
 let target = { x: 0, y: 0 }
@@ -33,7 +38,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div ref="dotRef" class="dot">
+    <div ref="dotRef" class="dot" :class="{ minimized: !dotVisible }">
         <div class="dot__content"></div>
     </div>
 </template>
@@ -58,7 +63,14 @@ onUnmounted(() => {
         transform: translate(-50%, -50%);
         background-color: var(--color-emphasize);
 
-        transition: background-color 0.3s ease-in-out;
+        transition-property: background-color, opacity, transform;
+        transition-duration: 0.25s;
+        transition-timing-function: ease-in-out;
+    }
+
+    &.minimized .dot__content {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
     }
 }
 </style>
