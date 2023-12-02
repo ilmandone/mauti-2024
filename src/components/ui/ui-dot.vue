@@ -9,7 +9,7 @@ const { dotVisible } = storeToRefs(store)
 const dotRef = ref<HTMLElement>()
 let target = { x: 0, y: 0 }
 let current = { x: 0, y: 0 }
-let interval = ref(0)
+let reqIsActive = ref(false)
 
 function onMouseMove(e: MouseEvent) {
     target = { x: e.clientX, y: e.clientY }
@@ -17,23 +17,25 @@ function onMouseMove(e: MouseEvent) {
 
 function onInterval() {
     current = {
-        x: current.x + (target.x - current.x) / 10,
-        y: current.y + (target.y - current.y) / 10
+        x: current.x + (target.x - current.x) / 20,
+        y: current.y + (target.y - current.y) / 20
     }
 
     if (dotRef.value) dotRef.value.style.transform = `translate(${current.x}px, ${current.y}px)`
+    reqIsActive.value && window.requestAnimationFrame(onInterval)
 }
 
 onMounted(() => {
     if (dotRef.value) {
         window.addEventListener('mousemove', onMouseMove)
-        interval.value = window.setInterval(onInterval, 20)
+        window.requestAnimationFrame(onInterval)
+        reqIsActive.value = true
     }
 })
 
 onUnmounted(() => {
     window.removeEventListener('mousemove', onMouseMove)
-    window.clearInterval(interval.value)
+    reqIsActive.value = false
 })
 </script>
 
