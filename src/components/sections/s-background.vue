@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia'
 const store = useMainStore()
 const { theme } = storeToRefs(store)
 
-const props = defineProps(['startLoading'])
+const props = defineProps(['startLoading', 'scrollProgress'])
 const emits = defineEmits<{
     (event: 'loadProgress', id: number): void
 }>()
@@ -31,6 +31,13 @@ watch(
 watch(theme, (cv) => {
     if (threeBg.value) threeBg.value.change(cv === 'light' ? 0 : 1)
 })
+
+watch(
+    () => props.scrollProgress,
+    (v: number) => {
+        threeBg.value?.scrollProgression(v)
+    }
+)
 
 const threeContainer = ref()
 const threeBg = ref<ThreeBackground>()

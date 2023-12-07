@@ -23,6 +23,8 @@ const props = defineProps({
     coverHidden: { default: false }
 })
 
+const emits = defineEmits<{ (event: 'scrollProgress', p: number): void }>()
+
 const scrollProgress = computed<number>(() => {
     return scrollValue.value / mainHeight.value
 })
@@ -46,6 +48,7 @@ const updateByDrag = (v: number) => {
 
 //#region Window resize
 const updateMainHeight = () => {
+    console.log('main height')
     mainHeight.value = main.value?.getBoundingClientRect().height
 }
 
@@ -57,6 +60,13 @@ watch(
     () => props.loadEnd,
     () => {
         updateMainHeight()
+    }
+)
+
+watch(
+    () => scrollProgress.value,
+    (v) => {
+        emits('scrollProgress', v)
     }
 )
 

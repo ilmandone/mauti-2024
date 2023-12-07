@@ -13,6 +13,7 @@ export class ThreeBackground {
     private _camera!: THREE.PerspectiveCamera
     private _container!: HTMLElement
     private _renderer!: THREE.WebGLRenderer
+    private _mesh!: THREE.Mesh
     private _windowRatio!: number
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
@@ -90,11 +91,11 @@ export class ThreeBackground {
             emissiveMap: this._textures[0]
         })
 
-        const mesh = new THREE.Mesh(g, mat)
-        mesh.rotation.set(0, 0, Math.PI / 2)
-        _scene.add(mesh)
+        const _mesh = new THREE.Mesh(g, mat)
+        _mesh.rotation.set(0, 0, Math.PI / 2)
+        _scene.add(_mesh)
 
-        return { _camera, _renderer, _scene, _windowRatio }
+        return { _camera, _renderer, _scene, _windowRatio, _mesh }
     }
 
     /**
@@ -150,7 +151,7 @@ export class ThreeBackground {
     }
 
     public scrollProgression(v: number) {
-        console.log(v)
+        this._mesh.rotation.x = v * (Math.PI * 2)
     }
 
     //#endregion

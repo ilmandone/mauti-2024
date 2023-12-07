@@ -36,7 +36,6 @@ const delta = computed<number>(() => {
 
         value = delta * (window.innerHeight - height.value)
     }
-
     return value
 })
 //#endregion
