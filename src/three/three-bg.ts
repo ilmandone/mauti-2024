@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce'
 import { vertex } from '@/three/shader/vertex'
 import { fragment } from '@/three/shader/fragment'
 import Anime from 'animejs/lib/anime.es.js'
+import { h } from 'vue'
 
 export type ProgressCb = (v: number) => unknown
 
@@ -64,68 +65,34 @@ export class ThreeBackground {
         this._animation.play()
     }
 
-    private _updateUniformResolution(width: number, height: number): void {
-        this._uniforms.resolution.value.x = width
-        this._uniforms.resolution.value.y = height
-
-        const textRatio = this._textures[0].image.height / this._textures[0].image.width
-        const aspIsMoreThanText = height / width > textRatio
-
-        this._uniforms.resolution.value.z = aspIsMoreThanText ? (width / height) * textRatio : 1 // a1
-        this._uniforms.resolution.value.w = aspIsMoreThanText ? 1 : height / width / textRatio
-    }
-
-    private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
-        const uniforms = {
-            time: { type: 'f', value: 0 },
-            progress: { type: 'f', value: this._startProgress },
-            border: { type: 'f', value: 0 },
-            intensity: { type: 'f', value: 0 },
-            width: { value: 0.5, type: 'f', min: 0, max: 10 },
-            scaleX: { value: 40, type: 'f', min: 0.1, max: 60 },
-            scaleY: { value: 40, type: 'f', min: 0.1, max: 60 },
-            transition: { type: 'f', value: 40 },
-            swipe: { type: 'f', value: 0 },
-            radius: { type: 'f', value: 0 },
-            texture1: { type: 'f', value: this._textures[0] },
-            texture2: { type: 'f', value: this._textures[1] },
-            displacement: { type: 'f', value: this._textures[2] },
-            resolution: { type: 'v4', value: new THREE.Vector4() }
-        }
-        const mat: THREE.ShaderMaterial = new THREE.ShaderMaterial({
-            uniforms,
-            vertexShader: vertex,
-            fragmentShader: fragment,
-            transparent: true,
-            depthTest: false,
-            side: THREE.DoubleSide
-        })
-
-        return { mat, uniforms }
-    }
-
     /**
      * Init THREE and scene elements
      * @private
      */
     private _init() {
-        const planeSize = 1.55
-        const cameraDist = 1
+        const planeSize = 1.8
+        const cameraDist = 3
 
         const _windowRatio = window.innerWidth / window.innerHeight
         const _scene: THREE.Scene = new THREE.Scene()
-        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(75, this._windowRatio, 0.1, 1000)
+        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(48, 1, 0.1, 1000)
         _camera.position.z = cameraDist
 
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
         _renderer.setSize(window.innerWidth, window.innerHeight)
 
-        const g = new THREE.PlaneGeometry(planeSize, planeSize)
-        const { mat, uniforms } = this.createMaterial()
-        this._uniforms = uniforms
+        // const g = new THREE.PlaneGeometry(planeSize, planeSize)
+        const g = new THREE.SphereGeometry(planeSize / 2, 32, 32)
 
-        const plane = new THREE.Mesh(g, mat)
-        _scene.add(plane)
+        const mat = new THREE.MeshStandardMaterial({
+            map: this._textures[0],
+            emissive: new THREE.Color(0xffffff),
+            emissiveMap: this._textures[0]
+        })
+
+        const mesh = new THREE.Mesh(g, mat)
+        mesh.rotation.set(0, 0, Math.PI / 2)
+        _scene.add(mesh)
 
         return { _camera, _renderer, _scene, _windowRatio }
     }
@@ -140,9 +107,8 @@ export class ThreeBackground {
 
         this._renderer.setSize(width, height)
         this._camera.aspect = width / height
+        this._camera.updateProjectionMatrix()
         this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
-
-        this._updateUniformResolution(width, height)
     }
 
     /**
@@ -174,13 +140,17 @@ export class ThreeBackground {
             this._setViewPort()
             window.addEventListener('resize', this._resize.bind(this))
 
-            // Start rendere loop
+            // Start rendering loop
             this._start()
         })
     }
 
     public change(v: number) {
         this._change(v)
+    }
+
+    public scrollProgression(v: number) {
+        console.log(v)
     }
 
     //#endregion
