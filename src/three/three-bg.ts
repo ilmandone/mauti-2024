@@ -14,6 +14,7 @@ export class ThreeBackground {
     private _container!: HTMLElement
     private _renderer!: THREE.WebGLRenderer
     private _mesh!: THREE.Mesh
+    private _material!: THREE.MeshStandardMaterial
     private _windowRatio!: number
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
@@ -21,7 +22,7 @@ export class ThreeBackground {
     private _textures!: THREE.Texture[]
     private _uniforms!: { [uniform: string]: IUniform }
 
-    private _animation!: Anime.AnimeInstance
+    private _animRotation!: Anime.AnimeInstance
     private readonly _startProgress!: number
 
     private readonly _PROGRESS_CB!: ProgressCb
@@ -54,16 +55,7 @@ export class ThreeBackground {
     }
 
     private _change(v: number): void {
-        const targets = this._uniforms.progress
-        this._animation = Anime({
-            targets,
-            value: v,
-            duration: 1200,
-            easing: 'easeOutSine',
-            autoplay: false
-        })
-
-        this._animation.play()
+        this._material.emissiveMap = this._textures[v]
     }
 
     /**
@@ -71,31 +63,31 @@ export class ThreeBackground {
      * @private
      */
     private _init() {
-        const planeSize = 1.8
-        const cameraDist = 3
+        const planeSize = 1
+        const cameraDist = 5.6
 
         const _windowRatio = window.innerWidth / window.innerHeight
         const _scene: THREE.Scene = new THREE.Scene()
-        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(48, 1, 0.1, 1000)
+        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1, 0.1, 1000)
         _camera.position.z = cameraDist
 
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
         _renderer.setSize(window.innerWidth, window.innerHeight)
 
         // const g = new THREE.PlaneGeometry(planeSize, planeSize)
-        const g = new THREE.SphereGeometry(planeSize / 2, 32, 32)
+        const g = new THREE.CylinderGeometry(planeSize / 2, planeSize / 2, 3, 32)
 
-        const mat = new THREE.MeshStandardMaterial({
+        const _material = new THREE.MeshStandardMaterial({
             map: this._textures[0],
             emissive: new THREE.Color(0xffffff),
             emissiveMap: this._textures[0]
         })
 
-        const _mesh = new THREE.Mesh(g, mat)
+        const _mesh = new THREE.Mesh(g, _material)
         _mesh.rotation.set(0, 0, Math.PI / 2)
         _scene.add(_mesh)
 
-        return { _camera, _renderer, _scene, _windowRatio, _mesh }
+        return { _camera, _renderer, _scene, _windowRatio, _mesh, _material }
     }
 
     /**
@@ -109,7 +101,7 @@ export class ThreeBackground {
         this._renderer.setSize(width, height)
         this._camera.aspect = width / height
         this._camera.updateProjectionMatrix()
-        this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
+        // this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
     }
 
     /**
@@ -151,7 +143,12 @@ export class ThreeBackground {
     }
 
     public scrollProgression(v: number) {
-        this._mesh.rotation.x = v * (Math.PI * 2)
+        this._animRotation = Anime({
+            targets: this._mesh.rotation,
+            x: v * (Math.PI * 2),
+            duration: 600,
+            easing: 'easeOutCirc'
+        })
     }
 
     //#endregion
