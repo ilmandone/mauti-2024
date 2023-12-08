@@ -1,12 +1,13 @@
-import type { IUniform } from 'three'
 import * as THREE from 'three'
 import debounce from 'lodash.debounce'
-import { vertex } from '@/three/shader/vertex'
-import { fragment } from '@/three/shader/fragment'
 import Anime from 'animejs/lib/anime.es.js'
-import { h } from 'vue'
 
 export type ProgressCb = (v: number) => unknown
+
+enum Theme {
+    Light = 0,
+    Dark = 1
+}
 
 export class ThreeBackground {
     private _scene!: THREE.Scene
@@ -15,22 +16,20 @@ export class ThreeBackground {
     private _renderer!: THREE.WebGLRenderer
     private _mesh!: THREE.Mesh
     private _material!: THREE.MeshStandardMaterial
-    private _windowRatio!: number
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
 
     private _textures!: THREE.Texture[]
-    private _uniforms!: { [uniform: string]: IUniform }
 
     private _animRotation!: Anime.AnimeInstance
-    private readonly _startProgress!: number
+    private readonly _state!: Theme
 
     private readonly _PROGRESS_CB!: ProgressCb
 
-    constructor(container: HTMLElement, progressCb: ProgressCb, startProgress: number) {
+    constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
         this._container = container
         this._PROGRESS_CB = progressCb
-        this._startProgress = startProgress
+        this._state = startState
     }
 
     private _textureLoaded(index: number) {
@@ -54,8 +53,10 @@ export class ThreeBackground {
         })
     }
 
-    private _change(v: number): void {
+    private _change(v: Theme): void {
+        this._material.map = this._textures[v]
         this._material.emissiveMap = this._textures[v]
+        this._material.emissiveIntensity = v === 0 ? 1 : 0.15
     }
 
     /**
@@ -78,9 +79,10 @@ export class ThreeBackground {
         const g = new THREE.CylinderGeometry(planeSize / 2, planeSize / 2, 3, 32)
 
         const _material = new THREE.MeshStandardMaterial({
-            map: this._textures[0],
+            map: this._textures[this._state],
             emissive: new THREE.Color(0xffffff),
-            emissiveMap: this._textures[0]
+            emissiveMap: this._textures[this._state],
+            emissiveIntensity: this._state === 0 ? 1 : 0.2
         })
 
         const _mesh = new THREE.Mesh(g, _material)
@@ -101,7 +103,6 @@ export class ThreeBackground {
         this._renderer.setSize(width, height)
         this._camera.aspect = width / height
         this._camera.updateProjectionMatrix()
-        // this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
     }
 
     /**
@@ -138,7 +139,7 @@ export class ThreeBackground {
         })
     }
 
-    public change(v: number) {
+    public change(v: Theme) {
         this._change(v)
     }
 

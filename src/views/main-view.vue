@@ -13,6 +13,8 @@ import RIntObserver from '@components/renderless/r-int-observer.vue'
 import { ScrollDetectDirective as vScrollDetect } from '@/directives/scroll-detect.directive'
 import { SectionTranslationDirective as vSectionTranslation } from '@/directives/section-translation.directive'
 
+const SCROLL_PROGRESS = 'scrollProgress'
+
 const main = ref()
 const scrollValue = ref<number>(0)
 const mainHeight = ref<number>(0)
@@ -23,7 +25,7 @@ const props = defineProps({
     coverHidden: { default: false }
 })
 
-const emits = defineEmits<{ (event: 'scrollProgress', p: number): void }>()
+const emits = defineEmits<{ (event: typeof SCROLL_PROGRESS, p: number): void }>()
 
 const scrollProgress = computed<number>(() => {
     return scrollValue.value / mainHeight.value
@@ -66,7 +68,7 @@ watch(
 watch(
     () => scrollProgress.value,
     (v) => {
-        emits('scrollProgress', v)
+        emits(SCROLL_PROGRESS, v)
     }
 )
 
