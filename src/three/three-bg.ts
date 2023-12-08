@@ -9,11 +9,38 @@ enum Theme {
     Dark = 1
 }
 
+interface IInit {
+    _renderer: THREE.WebGLRenderer
+    _renderTarget: THREE.WebGLRenderTarget<THREE.Texture>
+}
+
+interface IInitMainScene {
+    _scene: THREE.Scene
+    _camera: THREE.PerspectiveCamera
+}
+
+interface IInitRTScene {
+    _rtCamera: THREE.PerspectiveCamera
+    _rtScene: THREE.Scene
+    _mesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial, THREE.Object3DEventMap>
+    _material: THREE.MeshStandardMaterial
+}
+
 export class ThreeBackground {
+    // Main scene
     private _scene!: THREE.Scene
     private _camera!: THREE.PerspectiveCamera
     private _container!: HTMLElement
     private _renderer!: THREE.WebGLRenderer
+
+    // Render target
+    static readonly RENDER_TARGET_HEIGHT = 576
+    static readonly RENDER_TARGET_WIDTH = 1024
+
+    private _rtScene!: THREE.Scene
+    private _rtCamera!: THREE.PerspectiveCamera
+    private _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
+
     private _mesh!: THREE.Mesh
     private _material!: THREE.MeshStandardMaterial
 
@@ -24,16 +51,18 @@ export class ThreeBackground {
     private _animRotation!: Anime.AnimeInstance
     private readonly _state!: Theme
 
-    private readonly _PROGRESS_CB!: ProgressCb
+    private readonly _progressCb!: ProgressCb
 
     constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
         this._container = container
-        this._PROGRESS_CB = progressCb
+        this._progressCb = progressCb
         this._state = startState
     }
 
+    //#region Textures
+
     private _textureLoaded(index: number) {
-        this._PROGRESS_CB(Math.round((index / this._IMAGES.length) * 100))
+        this._progressCb(Math.round((index / this._IMAGES.length) * 100))
     }
 
     private async _loadTextures(): Promise<THREE.Texture[]> {
@@ -48,10 +77,12 @@ export class ThreeBackground {
             )
         })
         return await Promise.all(promises).then((r) => {
-            this._PROGRESS_CB(100)
+            this._progressCb(100)
             return r
         })
     }
+
+    //#endregion
 
     private _change(v: Theme): void {
         this._material.map = this._textures[v]
@@ -60,23 +91,36 @@ export class ThreeBackground {
     }
 
     /**
-     * Init THREE and scene elements
+     * Initializes the renderer and render target.
      * @private
+     * @returns {IInit}
      */
-    private _init() {
-        const planeSize = 1
-        const cameraDist = 5.6
-
-        const _windowRatio = window.innerWidth / window.innerHeight
-        const _scene: THREE.Scene = new THREE.Scene()
-        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1, 0.1, 1000)
-        _camera.position.z = cameraDist
-
+    private _init(): IInit {
+        const _renderTarget = new THREE.WebGLRenderTarget(
+            ThreeBackground.RENDER_TARGET_WIDTH,
+            ThreeBackground.RENDER_TARGET_HEIGHT
+        )
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
         _renderer.setSize(window.innerWidth, window.innerHeight)
 
-        // const g = new THREE.PlaneGeometry(planeSize, planeSize)
-        const g = new THREE.CylinderGeometry(planeSize / 2, planeSize / 2, 3, 32)
+        return { _renderer, _renderTarget }
+    }
+
+    /**
+     * Initializes the render target scene.
+     * @private
+     * @returns {IInitRTScene}
+     */
+    private _initRTScene(): IInitRTScene {
+        const cylRadius = 1
+        const cameraDist = 5.6
+
+        const _rtScene: THREE.Scene = new THREE.Scene()
+        _rtScene.background = new THREE.Color('red')
+        const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
+        _rtCamera.position.z = cameraDist
+
+        const g = new THREE.CylinderGeometry(cylRadius / 2, cylRadius / 2, 3, 32)
 
         const _material = new THREE.MeshStandardMaterial({
             map: this._textures[this._state],
@@ -87,10 +131,47 @@ export class ThreeBackground {
 
         const _mesh = new THREE.Mesh(g, _material)
         _mesh.rotation.set(0, 0, Math.PI / 2)
+        _rtScene.add(_mesh)
+
+        return { _rtCamera, _rtScene, _mesh, _material }
+    }
+
+    /**
+     * Initializes the main scene and camera.
+     * @param {THREE.RenderTarget} renderTarget - The render target used for the material.
+     * @return { IInitMainScene }
+     */
+    private _initMainScene(renderTarget: THREE.RenderTarget): IInitMainScene {
+        console.log(renderTarget)
+        const planeSize = 1.5
+        const cameraDist = 1
+
+        const _scene: THREE.Scene = new THREE.Scene()
+        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
+            80,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        )
+        _camera.position.z = cameraDist
+
+        const g = new THREE.PlaneGeometry(planeSize * 1.8, planeSize)
+        const m = new THREE.MeshStandardMaterial({
+            map: renderTarget.texture,
+            emissiveMap: renderTarget.texture
+            // emissive: 0xffffff
+        })
+
+        const _mesh = new THREE.Mesh(g, m)
         _scene.add(_mesh)
 
-        return { _camera, _renderer, _scene, _windowRatio, _mesh, _material }
+        const light = new THREE.AmbientLight(0xffffff, 3)
+        _scene.add(light)
+
+        return { _scene, _camera }
     }
+
+    //#region Resize
 
     /**
      * Update render and camera to match viewport
@@ -111,12 +192,19 @@ export class ThreeBackground {
      */
     private _resize = debounce(this._setViewPort, 50)
 
+    //#endregion
+
     /**
      * Start render loop
      * @private
      */
     private _start() {
         window.requestAnimationFrame(this._start.bind(this))
+
+        this._renderer.setRenderTarget(this._renderTarget)
+        this._renderer.render(this._rtScene, this._rtCamera)
+
+        this._renderer.setRenderTarget(null)
         this._renderer.render(this._scene, this._camera)
     }
 
@@ -127,12 +215,18 @@ export class ThreeBackground {
             // Store textures
             this._textures = r
 
-            // Init scene and store references
+            // Create common render and render target
             Object.assign(this, this._init())
-            this._container.appendChild(this._renderer.domElement)
+
+            Object.assign(this, this._initRTScene())
+
+            // Create the main scene
+            Object.assign(this, this._initMainScene(this._renderTarget))
 
             this._setViewPort()
             window.addEventListener('resize', this._resize.bind(this))
+
+            this._container.appendChild(this._renderer.domElement)
 
             // Start rendering loop
             this._start()
