@@ -11,17 +11,26 @@ let target = { x: 0, y: 0 }
 let current = { x: 0, y: 0 }
 let reqIsActive = ref(false)
 
+const emits = defineEmits<{
+    (event: 'dotPosition', value: { x: number; y: number }): void
+}>()
+
 function onMouseMove(e: MouseEvent) {
     target = { x: e.clientX, y: e.clientY }
 }
 
 function onInterval() {
-    current = {
-        x: current.x + (target.x - current.x) / 20,
-        y: current.y + (target.y - current.y) / 20
+    const newCurrent = {
+        x: Math.round(current.x + (target.x - current.x) / 20),
+        y: Math.round(current.y + (target.y - current.y) / 20)
     }
 
-    if (dotRef.value) dotRef.value.style.transform = `translate(${current.x}px, ${current.y}px)`
+    if (dotRef.value && (newCurrent.x !== current.x || newCurrent.y !== current.y)) {
+        current = newCurrent
+        emits('dotPosition', current)
+        dotRef.value.style.transform = `translate(${current.x}px, ${current.y}px)`
+    }
+
     reqIsActive.value && window.requestAnimationFrame(onInterval)
 }
 

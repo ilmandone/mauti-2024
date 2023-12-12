@@ -48,10 +48,12 @@ export class ThreeBackground {
 
     private _textures!: THREE.Texture[]
 
-    private _animRotation!: Anime.AnimeInstance
     private readonly _state!: Theme
 
+    // interactions
     private readonly _progressCb!: ProgressCb
+    private _animRotation!: Anime.AnimeInstance
+    private _dotCoords: { x: number; y: number } = { x: 0, y: 0 }
 
     constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
         this._container = container
@@ -235,6 +237,10 @@ export class ThreeBackground {
 
     public change(v: Theme) {
         this._change(v)
+    }
+
+    public pointerPosition(p: { x: number; y: number }) {
+        // TODO: Convert pointer coords to shape coords
     }
 
     public scrollProgression(v: number) {
