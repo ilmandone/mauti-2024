@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import debounce from 'lodash.debounce'
 import Anime from 'animejs/lib/anime.es.js'
+import { vertex } from '@/three/shader-grid/vertex'
+import { fragment } from '@/three/shader-grid/fragment'
 
 export type ProgressCb = (v: number) => unknown
 
@@ -17,13 +19,15 @@ interface IInit {
 interface IInitMainScene {
     _scene: THREE.Scene
     _camera: THREE.PerspectiveCamera
+    _randomGrid: THREE.DataTexture
+    _material: THREE.ShaderMaterial
 }
 
 interface IInitRTScene {
     _rtCamera: THREE.PerspectiveCamera
     _rtScene: THREE.Scene
-    _mesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial, THREE.Object3DEventMap>
-    _material: THREE.MeshStandardMaterial
+    _rtMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial, THREE.Object3DEventMap>
+    _rtMaterial: THREE.MeshStandardMaterial
 }
 
 export class ThreeBackground {
@@ -37,18 +41,21 @@ export class ThreeBackground {
     static readonly RENDER_TARGET_HEIGHT = 576
     static readonly RENDER_TARGET_WIDTH = 1024
 
+    // Render texture
     private _rtScene!: THREE.Scene
     private _rtCamera!: THREE.PerspectiveCamera
     private _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
-
-    private _mesh!: THREE.Mesh
-    private _material!: THREE.MeshStandardMaterial
+    private _rtMaterial!: THREE.MeshStandardMaterial
+    private _rtMesh!: THREE.Mesh
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
-
     private _textures!: THREE.Texture[]
 
     private readonly _state!: Theme
+
+    // distortion
+    private _randomGrid!: THREE.DataTexture
+    private _material!: THREE.ShaderMaterial
 
     // interactions
     private readonly _progressCb!: ProgressCb
@@ -86,10 +93,46 @@ export class ThreeBackground {
 
     //#endregion
 
+    //#region Distortion
+
+    /**
+     * Creates a random grid texture.
+     *
+     * @private
+     * @returns {THREE.DataTexture} The generated random grid texture.
+     */
+    private _createRandoGrid(): THREE.DataTexture {
+        const GRID_SIZE = 40
+
+        const width = GRID_SIZE
+        const height = GRID_SIZE
+
+        const size = width * height
+
+        const data = new Float32Array(3 * size)
+
+        for (let i = 0; i < size; i++) {
+            const r = Math.random() * 255 - 125
+            const r1 = Math.random() * 255 - 125
+            const stride = i * 3
+
+            data[stride] = r
+            data[stride + 1] = r1
+            data[stride + 2] = r
+        }
+
+        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGFormat, THREE.FloatType)
+        randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
+
+        return randomTexture
+    }
+
+    //#endregion
+
     private _change(v: Theme): void {
-        this._material.map = this._textures[v]
-        this._material.emissiveMap = this._textures[v]
-        this._material.emissiveIntensity = v === 0 ? 1 : 0.15
+        this._rtMaterial.map = this._textures[v]
+        this._rtMaterial.emissiveMap = this._textures[v]
+        this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.15
     }
 
     /**
@@ -124,18 +167,18 @@ export class ThreeBackground {
 
         const g = new THREE.CylinderGeometry(cylRadius / 2, cylRadius / 2, 3, 32)
 
-        const _material = new THREE.MeshStandardMaterial({
+        const _rtMaterial = new THREE.MeshStandardMaterial({
             map: this._textures[this._state],
             emissive: new THREE.Color(0xffffff),
             emissiveMap: this._textures[this._state],
             emissiveIntensity: this._state === 0 ? 1 : 0.2
         })
 
-        const _mesh = new THREE.Mesh(g, _material)
-        _mesh.rotation.set(0, 0, Math.PI / 2)
-        _rtScene.add(_mesh)
+        const _rtMesh = new THREE.Mesh(g, _rtMaterial)
+        _rtMesh.rotation.set(0, 0, Math.PI / 2)
+        _rtScene.add(_rtMesh)
 
-        return { _rtCamera, _rtScene, _mesh, _material }
+        return { _rtCamera, _rtScene, _rtMesh, _rtMaterial }
     }
 
     /**
@@ -144,7 +187,6 @@ export class ThreeBackground {
      * @return { IInitMainScene }
      */
     private _initMainScene(renderTarget: THREE.RenderTarget): IInitMainScene {
-        console.log(renderTarget)
         const planeSize = 1.5
         const cameraDist = 1
 
@@ -158,19 +200,38 @@ export class ThreeBackground {
         _camera.position.z = cameraDist
 
         const g = new THREE.PlaneGeometry(planeSize * 1.8, planeSize)
-        const m = new THREE.MeshStandardMaterial({
-            map: renderTarget.texture,
-            emissiveMap: renderTarget.texture
-            // emissive: 0xffffff
+
+        const _randomGrid = this._createRandoGrid()
+        const _material = new THREE.ShaderMaterial({
+            /*extensions: {
+                derivatives: '#extension GL_OES_standard_derivatives : enable'
+            },*/
+            side: THREE.DoubleSide,
+            uniforms: {
+                time: {
+                    value: 0
+                },
+                resolution: {
+                    value: new THREE.Vector4()
+                },
+                uTexture: {
+                    value: renderTarget.texture
+                },
+                uDataTexture: {
+                    value: _randomGrid
+                }
+            },
+            vertexShader: vertex,
+            fragmentShader: fragment
         })
 
-        const _mesh = new THREE.Mesh(g, m)
+        const _mesh = new THREE.Mesh(g, _material)
         _scene.add(_mesh)
 
         const light = new THREE.AmbientLight(0xffffff, 3)
         _scene.add(light)
 
-        return { _scene, _camera }
+        return { _scene, _camera, _randomGrid, _material }
     }
 
     //#region Resize
@@ -186,6 +247,23 @@ export class ThreeBackground {
         this._renderer.setSize(width, height)
         this._camera.aspect = width / height
         this._camera.updateProjectionMatrix()
+
+        // Set uniform resolution
+        const imageAspect = ThreeBackground.RENDER_TARGET_HEIGHT / ThreeBackground.RENDER_TARGET_WIDTH
+        let a1
+        let a2
+        if (height / width > imageAspect) {
+            a1 = (width / height) * imageAspect
+            a2 = 1
+        } else {
+            a1 = 1
+            a2 = height / width / imageAspect
+        }
+
+        this._material.uniforms.resolution.value.x = width
+        this._material.uniforms.resolution.value.y = height
+        this._material.uniforms.resolution.value.z = a1
+        this._material.uniforms.resolution.value.w = a2
     }
 
     /**
@@ -245,7 +323,7 @@ export class ThreeBackground {
 
     public scrollProgression(v: number) {
         this._animRotation = Anime({
-            targets: this._mesh.rotation,
+            targets: this._rtMesh.rotation,
             x: v * (Math.PI * 2),
             duration: 600,
             easing: 'easeOutCirc'
