@@ -21,6 +21,7 @@ interface IInitMainScene {
     _camera: THREE.PerspectiveCamera
     _randomGrid: THREE.DataTexture
     _material: THREE.ShaderMaterial
+    _mesh: THREE.Mesh
 }
 
 interface IInitRTScene {
@@ -56,6 +57,7 @@ export class ThreeBackground {
     // distortion
     private _randomGrid!: THREE.DataTexture
     private _material!: THREE.ShaderMaterial
+    private _mesh!: THREE.Mesh
 
     // interactions
     private readonly _progressCb!: ProgressCb
@@ -101,28 +103,32 @@ export class ThreeBackground {
      * @private
      * @returns {THREE.DataTexture} The generated random grid texture.
      */
-    private _createRandoGrid(): THREE.DataTexture {
-        const GRID_SIZE = 40
+    private _createRandoGrid(aspect: number): THREE.DataTexture {
+        const GRID_SIZE = 20
 
-        const width = GRID_SIZE
+        const width = Math.round(GRID_SIZE * aspect)
         const height = GRID_SIZE
 
         const size = width * height
-
-        const data = new Float32Array(3 * size)
+        const data = new Float32Array(4 * size)
 
         for (let i = 0; i < size; i++) {
-            const r = Math.random() * 255 - 125
-            const r1 = Math.random() * 255 - 125
-            const stride = i * 3
+            let r = Math.random() * 255 - 125
+            let g = Math.random() * 255 - 125
+
+            console.log(r)
+
+            const stride = i * 4
 
             data[stride] = r
-            data[stride + 1] = r1
-            data[stride + 2] = r
+            data[stride + 1] = g
+            data[stride + 2] = 0
+            data[stride + 3] = 1
         }
 
-        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGFormat, THREE.FloatType)
+        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType)
         randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
+        randomTexture.needsUpdate = true
 
         return randomTexture
     }
@@ -130,6 +136,7 @@ export class ThreeBackground {
     //#endregion
 
     private _change(v: Theme): void {
+        this._rtScene.background = new THREE.Color(v === 0 ? 'red' : 'blue')
         this._rtMaterial.map = this._textures[v]
         this._rtMaterial.emissiveMap = this._textures[v]
         this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.15
@@ -158,7 +165,7 @@ export class ThreeBackground {
      */
     private _initRTScene(): IInitRTScene {
         const cylRadius = 1
-        const cameraDist = 5.6
+        const cameraDist = 5.8
 
         const _rtScene: THREE.Scene = new THREE.Scene()
         _rtScene.background = new THREE.Color('red')
@@ -187,21 +194,18 @@ export class ThreeBackground {
      * @return { IInitMainScene }
      */
     private _initMainScene(renderTarget: THREE.RenderTarget): IInitMainScene {
-        const planeSize = 1.5
-        const cameraDist = 1
+        const planeSize = 1
+        const cameraDist = 0.58
+
+        const aspect = window.innerWidth / window.innerHeight
 
         const _scene: THREE.Scene = new THREE.Scene()
-        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
-            80,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        )
+        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(80, aspect, 0.1, 1000)
         _camera.position.z = cameraDist
 
-        const g = new THREE.PlaneGeometry(planeSize * 1.8, planeSize)
+        const g = new THREE.PlaneGeometry(planeSize, planeSize)
 
-        const _randomGrid = this._createRandoGrid()
+        const _randomGrid = this._createRandoGrid(aspect)
         const _material = new THREE.ShaderMaterial({
             /*extensions: {
                 derivatives: '#extension GL_OES_standard_derivatives : enable'
@@ -215,7 +219,7 @@ export class ThreeBackground {
                     value: new THREE.Vector4()
                 },
                 uTexture: {
-                    value: renderTarget.texture
+                    value: _randomGrid // this._renderTarget.texture
                 },
                 uDataTexture: {
                     value: _randomGrid
@@ -226,12 +230,13 @@ export class ThreeBackground {
         })
 
         const _mesh = new THREE.Mesh(g, _material)
+        _mesh.scale.set(aspect, 1, 1)
         _scene.add(_mesh)
 
         const light = new THREE.AmbientLight(0xffffff, 3)
         _scene.add(light)
 
-        return { _scene, _camera, _randomGrid, _material }
+        return { _scene, _camera, _randomGrid, _material, _mesh }
     }
 
     //#region Resize
@@ -240,12 +245,15 @@ export class ThreeBackground {
      * Update render and camera to match viewport
      * @private
      */
-    private _setViewPort() {
+    private _resizeUpdate() {
         const width = window.innerWidth
         const height = window.innerHeight
+        const aspect = width / height
+
+        this._mesh.scale.set(aspect, 1, 1)
 
         this._renderer.setSize(width, height)
-        this._camera.aspect = width / height
+        this._camera.aspect = aspect
         this._camera.updateProjectionMatrix()
 
         // Set uniform resolution
@@ -253,24 +261,27 @@ export class ThreeBackground {
         let a1
         let a2
         if (height / width > imageAspect) {
-            a1 = (width / height) * imageAspect
+            a1 = aspect * imageAspect
             a2 = 1
         } else {
             a1 = 1
             a2 = height / width / imageAspect
         }
 
+        // Update the shader material
         this._material.uniforms.resolution.value.x = width
         this._material.uniforms.resolution.value.y = height
         this._material.uniforms.resolution.value.z = a1
         this._material.uniforms.resolution.value.w = a2
+
+        this._material.uniforms.uDataTexture.value = this._createRandoGrid(aspect)
     }
 
     /**
      * Window resize
      * @private
      */
-    private _resize = debounce(this._setViewPort, 50)
+    private _resize = debounce(this._resizeUpdate, 50)
 
     //#endregion
 
@@ -303,7 +314,7 @@ export class ThreeBackground {
             // Create the main scene
             Object.assign(this, this._initMainScene(this._renderTarget))
 
-            this._setViewPort()
+            this._resizeUpdate()
             window.addEventListener('resize', this._resize.bind(this))
 
             this._container.appendChild(this._renderer.domElement)
@@ -319,6 +330,7 @@ export class ThreeBackground {
 
     public pointerPosition(p: { x: number; y: number }) {
         // TODO: Convert pointer coords to shape coords
+        console.log(p)
     }
 
     public scrollProgression(v: number) {
