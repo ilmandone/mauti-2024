@@ -119,12 +119,8 @@ export class ThreeBackground {
 
     //#endregion
 
-    private _setTheme(v: Theme): void {
-        this._renderTexture.setTheme(v)
-    }
-
     /**
-     * Initializes the renderer and render target.
+     * Initializes the renderer.
      * @private
      * @returns {IInit}
      */
@@ -264,7 +260,7 @@ export class ThreeBackground {
     }
 
     public change(v: Theme) {
-        this._setTheme(v)
+        this._renderTexture.setTheme(v)
     }
 
     public pointerPosition(p: { x: number; y: number }) {
