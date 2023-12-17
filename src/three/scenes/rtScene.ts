@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import type { Theme } from '@/three/three-bg'
+import Anime from 'animejs/lib/anime.es'
 
 interface IInitRTScene {
     _rtCamera: THREE.PerspectiveCamera
@@ -11,6 +12,8 @@ interface IInitRTScene {
 export class RenderTexture {
     static readonly RENDER_TARGET_HEIGHT = 576
     static readonly RENDER_TARGET_WIDTH = 1024
+    static readonly CYLINDER_RADIUS = 1
+    static readonly CAMERA_DISTANCE = 5.8
 
     private readonly _textures!: THREE.Texture[]
     private readonly _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
@@ -38,17 +41,23 @@ export class RenderTexture {
         Object.assign(this, this.createScene(theme))
     }
 
+    /**
+     * Create the RT Scene
+     * @param theme
+     */
     public createScene(theme: Theme): IInitRTScene {
-        const cylRadius = 1
-        const cameraDist = 5.8
-
         const _rtScene: THREE.Scene = new THREE.Scene()
         _rtScene.background = new THREE.Color('red')
 
         const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
-        _rtCamera.position.z = cameraDist
+        _rtCamera.position.z = RenderTexture.CAMERA_DISTANCE
 
-        const g = new THREE.CylinderGeometry(cylRadius / 2, cylRadius / 2, 3, 32)
+        const g = new THREE.CylinderGeometry(
+            RenderTexture.CYLINDER_RADIUS / 2,
+            RenderTexture.CYLINDER_RADIUS / 2,
+            3,
+            32
+        )
 
         const _rtMaterial = new THREE.MeshStandardMaterial({
             map: this._textures[theme],
@@ -64,6 +73,10 @@ export class RenderTexture {
         return { _rtCamera, _rtScene, _rtMesh, _rtMaterial }
     }
 
+    /**
+     * Set theme for RT Scene
+     * @param v
+     */
     public setTheme(v: Theme) {
         this._rtScene.background = new THREE.Color(v === 0 ? 'red' : 'blue')
         this._rtMaterial.map = this._textures[v]
@@ -71,8 +84,26 @@ export class RenderTexture {
         this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.15
     }
 
+    /**
+     * Render step for RT scene
+     * @description The step is run and use the main renderer
+     * @param renderer
+     */
     public renderStep(renderer: THREE.WebGLRenderer) {
         renderer.setRenderTarget(this._renderTarget)
         renderer.render(this._rtScene, this._rtCamera)
+    }
+
+    /**
+     * Rotate the main cylinder
+     * @param {number} v
+     */
+    public rotateCylinder(v: number) {
+        Anime({
+            targets: this._rtMesh.rotation,
+            x: v * (Math.PI * 2),
+            duration: 600,
+            easing: 'easeOutCirc'
+        })
     }
 }

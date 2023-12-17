@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import debounce from 'lodash.debounce'
-import Anime from 'animejs/lib/anime.es.js'
 import { vertex } from '@/three/shader-grid/vertex'
 import { fragment } from '@/three/shader-grid/fragment'
 import { RenderTexture } from '@/three/scenes/rtScene'
@@ -10,11 +9,6 @@ export type ProgressCb = (v: number) => unknown
 export enum Theme {
     Light = 0,
     Dark = 1
-}
-
-interface IInit {
-    _renderer: THREE.WebGLRenderer
-    _renderTarget: THREE.WebGLRenderTarget<THREE.Texture>
 }
 
 interface IInitMainScene {
@@ -113,7 +107,7 @@ export class ThreeBackground {
 
         const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGFormat, THREE.FloatType)
         randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
-        // randomTexture.needsUpdate = true
+        // TODO: SEE THIS randomTexture.needsUpdate = true
         return randomTexture
     }
 
@@ -234,7 +228,7 @@ export class ThreeBackground {
     private _renderStep() {
         window.requestAnimationFrame(this._renderStep.bind(this))
 
-        // Render step for render texture scene
+        // Render texture scene
         this._renderTexture.renderStep(this._renderer)
 
         // Main render step
@@ -244,37 +238,53 @@ export class ThreeBackground {
 
     //#region Public
 
+    /**
+     * Load textures and start the background
+     */
     public start() {
         this._loadTextures().then((r) => {
-            this._renderTexture = new RenderTexture(r, this._startingTheme) // Create render texture instance
-            Object.assign(this, this._init()) // Create the main renderer
-            Object.assign(this, this._initMainScene(this._renderTexture.target)) // Create the main scene
+            // Create render texture instance
+            this._renderTexture = new RenderTexture(r, this._startingTheme)
+
+            // Create the main renderer
+            Object.assign(this, this._init())
+
+            // Create the main scene
+            Object.assign(this, this._initMainScene(this._renderTexture.target))
 
             this._resizeUpdate()
             window.addEventListener('resize', this._resize.bind(this))
 
             this._container.appendChild(this._renderer.domElement)
 
-            this._renderStep() // Start rendering loop
+            // Start rendering loop
+            this._renderStep()
         })
     }
 
+    /**
+     * Change theme
+     * @param {Theme} v
+     */
     public change(v: Theme) {
         this._renderTexture.setTheme(v)
     }
 
+    /**
+     * Pointer position update for distortion effect
+     * @param {{ x: number; y: number }} p
+     */
     public pointerPosition(p: { x: number; y: number }) {
         // TODO: Convert pointer coords to shape coords
         console.log(p)
     }
 
+    /**
+     * Scroll progression update for cylinder animation
+     * @param v
+     */
     public scrollProgression(v: number) {
-        Anime({
-            targets: this._renderTexture.mesh.rotation,
-            x: v * (Math.PI * 2),
-            duration: 600,
-            easing: 'easeOutCirc'
-        })
+        this._renderTexture.rotateCylinder(v)
     }
 
     //#endregion
