@@ -3,10 +3,11 @@ import debounce from 'lodash.debounce'
 import Anime from 'animejs/lib/anime.es.js'
 import { vertex } from '@/three/shader-grid/vertex'
 import { fragment } from '@/three/shader-grid/fragment'
+import { RenderTexture } from '@/three/scenes/rtScene'
 
 export type ProgressCb = (v: number) => unknown
 
-enum Theme {
+export enum Theme {
     Light = 0,
     Dark = 1
 }
@@ -24,13 +25,6 @@ interface IInitMainScene {
     _mesh: THREE.Mesh
 }
 
-interface IInitRTScene {
-    _rtCamera: THREE.PerspectiveCamera
-    _rtScene: THREE.Scene
-    _rtMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial, THREE.Object3DEventMap>
-    _rtMaterial: THREE.MeshStandardMaterial
-}
-
 export class ThreeBackground {
     // Main scene
     private _scene!: THREE.Scene
@@ -42,17 +36,11 @@ export class ThreeBackground {
     static readonly RENDER_TARGET_HEIGHT = 576
     static readonly RENDER_TARGET_WIDTH = 1024
 
-    // Render texture
-    private _rtScene!: THREE.Scene
-    private _rtCamera!: THREE.PerspectiveCamera
-    private _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
-    private _rtMaterial!: THREE.MeshStandardMaterial
-    private _rtMesh!: THREE.Mesh
-
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
-    private _textures!: THREE.Texture[]
+    private readonly _startingTheme!: Theme
 
-    private readonly _state!: Theme
+    // Render texture class
+    private _renderTexture!: RenderTexture
 
     // distortion
     private _randomGrid!: THREE.DataTexture
@@ -61,13 +49,12 @@ export class ThreeBackground {
 
     // interactions
     private readonly _progressCb!: ProgressCb
-    private _animRotation!: Anime.AnimeInstance
     private _dotCoords: { x: number; y: number } = { x: 0, y: 0 }
 
     constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
         this._container = container
         this._progressCb = progressCb
-        this._state = startState
+        this._startingTheme = startState
     }
 
     //#region Textures
@@ -103,43 +90,37 @@ export class ThreeBackground {
      * @private
      * @returns {THREE.DataTexture} The generated random grid texture.
      */
-    private _createRandoGrid(aspect: number): THREE.DataTexture {
+    private _createRandomGrid(aspect: number): THREE.DataTexture {
         const GRID_SIZE = 20
 
         const width = Math.round(GRID_SIZE * aspect)
         const height = GRID_SIZE
 
         const size = width * height
-        const data = new Float32Array(4 * size)
+        const data = new Float32Array(2 * size)
 
         for (let i = 0; i < size; i++) {
             let r = Math.random() * 255 - 125
             let g = Math.random() * 255 - 125
 
-            console.log(r)
-
             const stride = i * 4
 
             data[stride] = r
             data[stride + 1] = g
-            data[stride + 2] = 0
+            data[stride + 2] = r
             data[stride + 3] = 1
         }
 
-        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType)
+        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGFormat, THREE.FloatType)
         randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
-        randomTexture.needsUpdate = true
-
+        // randomTexture.needsUpdate = true
         return randomTexture
     }
 
     //#endregion
 
-    private _change(v: Theme): void {
-        this._rtScene.background = new THREE.Color(v === 0 ? 'red' : 'blue')
-        this._rtMaterial.map = this._textures[v]
-        this._rtMaterial.emissiveMap = this._textures[v]
-        this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.15
+    private _setTheme(v: Theme): void {
+        this._renderTexture.setTheme(v)
     }
 
     /**
@@ -147,45 +128,10 @@ export class ThreeBackground {
      * @private
      * @returns {IInit}
      */
-    private _init(): IInit {
-        const _renderTarget = new THREE.WebGLRenderTarget(
-            ThreeBackground.RENDER_TARGET_WIDTH,
-            ThreeBackground.RENDER_TARGET_HEIGHT
-        )
+    private _init(): { _renderer: THREE.WebGLRenderer } {
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
         _renderer.setSize(window.innerWidth, window.innerHeight)
-
-        return { _renderer, _renderTarget }
-    }
-
-    /**
-     * Initializes the render target scene.
-     * @private
-     * @returns {IInitRTScene}
-     */
-    private _initRTScene(): IInitRTScene {
-        const cylRadius = 1
-        const cameraDist = 5.8
-
-        const _rtScene: THREE.Scene = new THREE.Scene()
-        _rtScene.background = new THREE.Color('red')
-        const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
-        _rtCamera.position.z = cameraDist
-
-        const g = new THREE.CylinderGeometry(cylRadius / 2, cylRadius / 2, 3, 32)
-
-        const _rtMaterial = new THREE.MeshStandardMaterial({
-            map: this._textures[this._state],
-            emissive: new THREE.Color(0xffffff),
-            emissiveMap: this._textures[this._state],
-            emissiveIntensity: this._state === 0 ? 1 : 0.2
-        })
-
-        const _rtMesh = new THREE.Mesh(g, _rtMaterial)
-        _rtMesh.rotation.set(0, 0, Math.PI / 2)
-        _rtScene.add(_rtMesh)
-
-        return { _rtCamera, _rtScene, _rtMesh, _rtMaterial }
+        return { _renderer }
     }
 
     /**
@@ -205,11 +151,11 @@ export class ThreeBackground {
 
         const g = new THREE.PlaneGeometry(planeSize, planeSize)
 
-        const _randomGrid = this._createRandoGrid(aspect)
+        const _randomGrid = this._createRandomGrid(aspect)
         const _material = new THREE.ShaderMaterial({
-            /*extensions: {
+            extensions: {
                 derivatives: '#extension GL_OES_standard_derivatives : enable'
-            },*/
+            },
             side: THREE.DoubleSide,
             uniforms: {
                 time: {
@@ -219,7 +165,7 @@ export class ThreeBackground {
                     value: new THREE.Vector4()
                 },
                 uTexture: {
-                    value: _randomGrid // this._renderTarget.texture
+                    value: renderTarget.texture
                 },
                 uDataTexture: {
                     value: _randomGrid
@@ -274,7 +220,7 @@ export class ThreeBackground {
         this._material.uniforms.resolution.value.z = a1
         this._material.uniforms.resolution.value.w = a2
 
-        this._material.uniforms.uDataTexture.value = this._createRandoGrid(aspect)
+        this._material.uniforms.uDataTexture.value = this._createRandomGrid(aspect)
     }
 
     /**
@@ -289,12 +235,13 @@ export class ThreeBackground {
      * Start render loop
      * @private
      */
-    private _start() {
-        window.requestAnimationFrame(this._start.bind(this))
+    private _renderStep() {
+        window.requestAnimationFrame(this._renderStep.bind(this))
 
-        this._renderer.setRenderTarget(this._renderTarget)
-        this._renderer.render(this._rtScene, this._rtCamera)
+        // Render step for render texture scene
+        this._renderTexture.renderStep(this._renderer)
 
+        // Main render step
         this._renderer.setRenderTarget(null)
         this._renderer.render(this._scene, this._camera)
     }
@@ -303,29 +250,21 @@ export class ThreeBackground {
 
     public start() {
         this._loadTextures().then((r) => {
-            // Store textures
-            this._textures = r
-
-            // Create common render and render target
-            Object.assign(this, this._init())
-
-            Object.assign(this, this._initRTScene())
-
-            // Create the main scene
-            Object.assign(this, this._initMainScene(this._renderTarget))
+            this._renderTexture = new RenderTexture(r, this._startingTheme) // Create render texture instance
+            Object.assign(this, this._init()) // Create the main renderer
+            Object.assign(this, this._initMainScene(this._renderTexture.target)) // Create the main scene
 
             this._resizeUpdate()
             window.addEventListener('resize', this._resize.bind(this))
 
             this._container.appendChild(this._renderer.domElement)
 
-            // Start rendering loop
-            this._start()
+            this._renderStep() // Start rendering loop
         })
     }
 
     public change(v: Theme) {
-        this._change(v)
+        this._setTheme(v)
     }
 
     public pointerPosition(p: { x: number; y: number }) {
@@ -334,8 +273,8 @@ export class ThreeBackground {
     }
 
     public scrollProgression(v: number) {
-        this._animRotation = Anime({
-            targets: this._rtMesh.rotation,
+        Anime({
+            targets: this._renderTexture.mesh.rotation,
             x: v * (Math.PI * 2),
             duration: 600,
             easing: 'easeOutCirc'
