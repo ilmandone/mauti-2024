@@ -15,20 +15,11 @@ void main()	{
   vec4 color = texture2D(uTexture,UVCoords);
   vec4 deform = texture2D(uDataTexture, vUv);
   
-  gl_FragColor = texture2D(uTexture, UVCoords - 0.02 * deform.rg);
+  vec4 finalTexture = texture2D(uTexture, UVCoords - 0.02 * deform.rg);
+  float lightIntensity = abs(deform.r) * 0.1;
+  vec4 finalColorAdded = vec4(finalTexture.r + lightIntensity, finalTexture.g + lightIntensity, finalTexture.b + lightIntensity, 1);
   
+  gl_FragColor = mix(finalTexture, finalColorAdded, deform.a);
+    
 }
 `
-
-// FIRST STEP
-// gl_FragColor = texture2D(uTexture, (vUv - vec2(0.5)) * resolution.zw + vec2(0.5));
-
-// TEST FOR DISTORTION
-// gl_FragColor = vec4(deform.r,0.,0.,1.);
-/*vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
-    vec4 color = texture2D(uTexture,newUV);
-    vec4 offset = texture2D(uDataTexture,vUv);
-    gl_FragColor = vec4(vUv,0.0,1.);
-    gl_FragColor = vec4(offset.r,0.,0.,1.);
-    gl_FragColor = color;
-    gl_FragColor = texture2D(uTexture,newUV - 0.02*offset.rg);*/
