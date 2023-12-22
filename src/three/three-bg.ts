@@ -63,7 +63,6 @@ export class ThreeBackground {
 
     // interactions
     private readonly _progressCb!: ProgressCb
-    private _dotCoords: { x: number; y: number } = { x: 0, y: 0 }
 
     constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
         this._container = container
@@ -144,7 +143,7 @@ export class ThreeBackground {
      * @private
      * @returns {THREE.DataTexture} The generated random grid texture.
      */
-    private _createRandomGrid(aspect: number): THREE.DataTexture {
+    private _createRandomGrid(): THREE.DataTexture {
         const width = ThreeBackground.DISTORTION_GRID_SIZE
         const height = ThreeBackground.DISTORTION_GRID_SIZE
 
@@ -174,7 +173,7 @@ export class ThreeBackground {
     /**
      * Initializes the renderer.
      * @private
-     * @returns {IInit}
+     * @returns {}
      */
     private _init(): { _renderer: THREE.WebGLRenderer } {
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
