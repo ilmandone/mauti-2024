@@ -48,10 +48,10 @@ export class ThreeBackground {
 
     // distortion
 
-    static readonly DISTORTION_STRENGTH = 0.2
+    static readonly DISTORTION_STRENGTH = 0.1
     static readonly DISTORTION_INFLUENCE = 0.2
     static readonly DISTORTION_GRID_SIZE = 128
-    static readonly DISTORTION_RELAXATION = 0.9
+    static readonly DISTORTION_RELAXATION = 0.95
 
     private _randomGridTexture!: THREE.DataTexture
     private _material!: THREE.ShaderMaterial
@@ -151,8 +151,8 @@ export class ThreeBackground {
         const data = new Float32Array(4 * size)
 
         for (let i = 0; i < size; i += 1) {
-            const r = Math.random() * 10
-            const g = Math.random() * 10
+            const r = Math.random() * 100
+            const g = Math.random() * 100
 
             const idOffseted = i * 4
 

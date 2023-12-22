@@ -10,9 +10,9 @@ interface IInitRTScene {
 }
 
 export class RenderTexture {
-    static readonly RENDER_TARGET_HEIGHT = 576
-    static readonly RENDER_TARGET_WIDTH = 1024
-    static readonly CYLINDER_RADIUS = 1
+    static readonly RENDER_TARGET_HEIGHT = 810 // 576
+    static readonly RENDER_TARGET_WIDTH = 1440 // 1024
+    static readonly CYLINDER_RADIUS = 0.5
     static readonly CAMERA_DISTANCE = 5.8
 
     private readonly _textures!: THREE.Texture[]
@@ -52,12 +52,7 @@ export class RenderTexture {
         const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
         _rtCamera.position.z = RenderTexture.CAMERA_DISTANCE
 
-        const g = new THREE.CylinderGeometry(
-            RenderTexture.CYLINDER_RADIUS / 2,
-            RenderTexture.CYLINDER_RADIUS / 2,
-            3,
-            32
-        )
+        const g = new THREE.CylinderGeometry(RenderTexture.CYLINDER_RADIUS, RenderTexture.CYLINDER_RADIUS, 3, 32)
 
         const _rtMaterial = new THREE.MeshStandardMaterial({
             map: this._textures[theme],
@@ -81,7 +76,7 @@ export class RenderTexture {
         this._rtScene.background = new THREE.Color(v === 0 ? 'red' : 'blue')
         this._rtMaterial.map = this._textures[v]
         this._rtMaterial.emissiveMap = this._textures[v]
-        this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.15
+        this._rtMaterial.emissiveIntensity = v === 0 ? 1 : 0.8
     }
 
     /**
