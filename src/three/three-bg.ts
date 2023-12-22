@@ -14,9 +14,19 @@ export enum Theme {
 interface IInitMainScene {
     _scene: THREE.Scene
     _camera: THREE.PerspectiveCamera
-    _randomGrid: THREE.DataTexture
+    _randomGridTexture: THREE.DataTexture
     _material: THREE.ShaderMaterial
     _mesh: THREE.Mesh
+}
+
+interface ICoords {
+    x: number
+    y: number
+}
+
+interface IMouse {
+    cur: ICoords
+    vel: ICoords
 }
 
 export class ThreeBackground {
@@ -37,9 +47,13 @@ export class ThreeBackground {
     private _renderTexture!: RenderTexture
 
     // distortion
-    private _randomGrid!: THREE.DataTexture
+    private _randomGridTexture!: THREE.DataTexture
     private _material!: THREE.ShaderMaterial
     private _mesh!: THREE.Mesh
+    private _mouse: IMouse = {
+        cur: { x: 0, y: 0 },
+        vel: { x: 0, y: 0 }
+    }
 
     // interactions
     private readonly _progressCb!: ProgressCb
@@ -78,6 +92,39 @@ export class ThreeBackground {
 
     //#region Distortion
 
+    private _updateDistortionTexture() {
+        const data = this._randomGridTexture.image.data
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] *= 0.99
+            data[i + 1] *= 0.99
+        }
+
+        // Convert mouse coords to grid texture coords
+        const gridMouseX = this._mouse.cur.x * 32
+        const gridMouseY = (1 - this._mouse.cur.y) * 32
+        const maxDist = 8
+
+        for (let i = 0; i < 32; i++) {
+            for (let j = 0; j < 32; j++) {
+                const dist = (gridMouseX - i) ** 2 + (gridMouseY - j) ** 2
+                const maxDistSq = maxDist ** 2
+
+                if (dist < maxDistSq) {
+                    const dataIndex = 4 * (i + 32 * j)
+
+                    let power = maxDist / Math.sqrt(dist)
+                    power = Math.max(0, Math.min(power, 10))
+
+                    data[dataIndex] += 0.2 * 100 * this._mouse.vel.x * power
+                    data[dataIndex + 1] -= 0.2 * 100 * this._mouse.vel.y * power
+                }
+            }
+        }
+
+        this._randomGridTexture.needsUpdate = true
+        this._material.uniforms.uDataTexture.value = this._randomGridTexture
+    }
+
     /**
      * Creates a random grid texture.
      *
@@ -85,17 +132,17 @@ export class ThreeBackground {
      * @returns {THREE.DataTexture} The generated random grid texture.
      */
     private _createRandomGrid(aspect: number): THREE.DataTexture {
-        const GRID_SIZE = 20
+        const GRID_SIZE = 32
 
-        const width = Math.round(GRID_SIZE * aspect)
+        const width = GRID_SIZE // Math.round(GRID_SIZE * aspect)
         const height = GRID_SIZE
 
         const size = width * height
-        const data = new Float32Array(2 * size)
+        const data = new Float32Array(4 * size)
 
-        for (let i = 0; i < size; i++) {
-            let r = Math.random() * 255 - 125
-            let g = Math.random() * 255 - 125
+        for (let i = 0; i < size; i += 1) {
+            const r = Math.random() * 10
+            const g = Math.random() * 10
 
             const stride = i * 4
 
@@ -105,9 +152,9 @@ export class ThreeBackground {
             data[stride + 3] = 1
         }
 
-        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGFormat, THREE.FloatType)
+        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType)
         randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
-        // TODO: SEE THIS randomTexture.needsUpdate = true
+        randomTexture.needsUpdate = true
         return randomTexture
     }
 
@@ -141,7 +188,7 @@ export class ThreeBackground {
 
         const g = new THREE.PlaneGeometry(planeSize, planeSize)
 
-        const _randomGrid = this._createRandomGrid(aspect)
+        const _randomGridTexture = this._createRandomGrid(aspect)
         const _material = new THREE.ShaderMaterial({
             extensions: {
                 derivatives: '#extension GL_OES_standard_derivatives : enable'
@@ -158,7 +205,7 @@ export class ThreeBackground {
                     value: renderTarget.texture
                 },
                 uDataTexture: {
-                    value: _randomGrid
+                    value: _randomGridTexture
                 }
             },
             vertexShader: vertex,
@@ -172,7 +219,7 @@ export class ThreeBackground {
         const light = new THREE.AmbientLight(0xffffff, 3)
         _scene.add(light)
 
-        return { _scene, _camera, _randomGrid, _material, _mesh }
+        return { _scene, _camera, _randomGridTexture, _material, _mesh }
     }
 
     //#region Resize
@@ -231,6 +278,9 @@ export class ThreeBackground {
         // Render texture scene
         this._renderTexture.renderStep(this._renderer)
 
+        // Update distortion
+        this._updateDistortionTexture()
+
         // Main render step
         this._renderer.setRenderTarget(null)
         this._renderer.render(this._scene, this._camera)
@@ -275,8 +325,10 @@ export class ThreeBackground {
      * @param {{ x: number; y: number }} p
      */
     public pointerPosition(p: { x: number; y: number }) {
-        // TODO: Convert pointer coords to shape coords
-        console.log(p)
+        const x = p.x / window.innerWidth
+        const y = p.y / window.innerHeight
+        this._mouse.vel = { x: x - this._mouse.cur.x, y: y - this._mouse.cur.y }
+        this._mouse.cur = { x, y }
     }
 
     /**
