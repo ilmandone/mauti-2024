@@ -47,6 +47,12 @@ export class ThreeBackground {
     private _renderTexture!: RenderTexture
 
     // distortion
+
+    static readonly DISTORTION_STRENGTH = 0.2
+    static readonly DISTORTION_INFLUENCE = 0.2
+    static readonly DISTORTION_GRID_SIZE = 128
+    static readonly DISTORTION_RELAXATION = 0.9
+
     private _randomGridTexture!: THREE.DataTexture
     private _material!: THREE.ShaderMaterial
     private _mesh!: THREE.Mesh
@@ -93,33 +99,40 @@ export class ThreeBackground {
     //#region Distortion
 
     private _updateDistortionTexture() {
-        const data = this._randomGridTexture.image.data
-        for (let i = 0; i < data.length; i += 4) {
-            data[i] *= 0.99
-            data[i + 1] *= 0.99
+        const randomGridData = this._randomGridTexture.image.data
+
+        // Decrease cell value to reduce distortion
+        for (let i = 0; i < randomGridData.length; i += 4) {
+            randomGridData[i] *= ThreeBackground.DISTORTION_RELAXATION
+            randomGridData[i + 1] *= ThreeBackground.DISTORTION_RELAXATION
         }
 
         // Convert mouse coords to grid texture coords
-        const gridMouseX = this._mouse.cur.x * 32
-        const gridMouseY = (1 - this._mouse.cur.y) * 32
-        const maxDist = 8
+        const gridMouseX = this._mouse.cur.x * ThreeBackground.DISTORTION_GRID_SIZE
+        const gridMouseY = (1 - this._mouse.cur.y) * ThreeBackground.DISTORTION_GRID_SIZE
+        const maxDist = ThreeBackground.DISTORTION_GRID_SIZE * ThreeBackground.DISTORTION_INFLUENCE
 
-        for (let i = 0; i < 32; i++) {
-            for (let j = 0; j < 32; j++) {
-                const dist = (gridMouseX - i) ** 2 + (gridMouseY - j) ** 2
-                const maxDistSq = maxDist ** 2
+        // For each grid distortion increase the value based on the mouse velocity
+        for (let i = 0; i < ThreeBackground.DISTORTION_GRID_SIZE; i++) {
+            for (let j = 0; j < ThreeBackground.DISTORTION_GRID_SIZE; j++) {
+                const dist = Math.sqrt((gridMouseX - i) ** 2 + (gridMouseY - j) ** 2)
 
-                if (dist < maxDistSq) {
-                    const dataIndex = 4 * (i + 32 * j)
+                if (dist < maxDist) {
+                    const dataIndex = 4 * (i + ThreeBackground.DISTORTION_GRID_SIZE * j)
 
-                    let power = maxDist / Math.sqrt(dist)
-                    power = Math.max(0, Math.min(power, 10))
+                    let power = maxDist / dist
+                    power = Math.max(0, Math.min(power, 20))
 
-                    data[dataIndex] += 0.2 * 100 * this._mouse.vel.x * power
-                    data[dataIndex + 1] -= 0.2 * 100 * this._mouse.vel.y * power
+                    randomGridData[dataIndex] += 100 * this._mouse.vel.x * power * ThreeBackground.DISTORTION_STRENGTH
+                    randomGridData[dataIndex + 1] -=
+                        100 * this._mouse.vel.y * power * ThreeBackground.DISTORTION_STRENGTH
                 }
             }
         }
+
+        // Decrease the mouse velocity
+        this._mouse.vel.x *= ThreeBackground.DISTORTION_RELAXATION
+        this._mouse.vel.y *= ThreeBackground.DISTORTION_RELAXATION
 
         this._randomGridTexture.needsUpdate = true
         this._material.uniforms.uDataTexture.value = this._randomGridTexture
@@ -132,10 +145,8 @@ export class ThreeBackground {
      * @returns {THREE.DataTexture} The generated random grid texture.
      */
     private _createRandomGrid(aspect: number): THREE.DataTexture {
-        const GRID_SIZE = 32
-
-        const width = GRID_SIZE // Math.round(GRID_SIZE * aspect)
-        const height = GRID_SIZE
+        const width = ThreeBackground.DISTORTION_GRID_SIZE
+        const height = ThreeBackground.DISTORTION_GRID_SIZE
 
         const size = width * height
         const data = new Float32Array(4 * size)
@@ -144,12 +155,12 @@ export class ThreeBackground {
             const r = Math.random() * 10
             const g = Math.random() * 10
 
-            const stride = i * 4
+            const idOffseted = i * 4
 
-            data[stride] = r
-            data[stride + 1] = g
-            data[stride + 2] = r
-            data[stride + 3] = 1
+            data[idOffseted] = r
+            data[idOffseted + 1] = g
+            data[idOffseted + 2] = r
+            data[idOffseted + 3] = 1
         }
 
         const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType)
@@ -190,9 +201,9 @@ export class ThreeBackground {
 
         const _randomGridTexture = this._createRandomGrid(aspect)
         const _material = new THREE.ShaderMaterial({
-            extensions: {
-                derivatives: '#extension GL_OES_standard_derivatives : enable'
-            },
+            /* extensions: {
+          derivatives: '#extension GL_OES_standard_derivatives : enable'
+      },*/
             side: THREE.DoubleSide,
             uniforms: {
                 time: {
