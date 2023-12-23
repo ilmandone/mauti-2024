@@ -198,7 +198,7 @@ export class ThreeBackground {
 
         const g = new THREE.PlaneGeometry(planeSize, planeSize)
 
-        const _randomGridTexture = this._createRandomGrid(aspect)
+        const _randomGridTexture = this._createRandomGrid()
         const _material = new THREE.ShaderMaterial({
             /* extensions: {
           derivatives: '#extension GL_OES_standard_derivatives : enable'
@@ -267,7 +267,7 @@ export class ThreeBackground {
         this._material.uniforms.resolution.value.z = a1
         this._material.uniforms.resolution.value.w = a2
 
-        this._material.uniforms.uDataTexture.value = this._createRandomGrid(aspect)
+        this._material.uniforms.uDataTexture.value = this._createRandomGrid()
     }
 
     /**
