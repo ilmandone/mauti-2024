@@ -102,9 +102,9 @@ onMounted(() => {
 
     h3 {
         margin: 2.5rem 0;
-        @include commons.left-border($color: var(--color-emphasize));
+        @include commons.left-border($color: var(--color-main));
 
-        @include typo.body(1.75rem, var(--color-emphasize));
+        @include typo.body(1.75rem, var(--color-main));
         font-weight: 700;
         line-height: 2rem;
         text-transform: uppercase;
@@ -112,6 +112,7 @@ onMounted(() => {
 
     p {
         font-size: 1.25rem;
+        //text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
     }
 
     @include utils.media('t') {

@@ -1,37 +1,79 @@
-import type { IUniform } from 'three'
 import * as THREE from 'three'
 import debounce from 'lodash.debounce'
-import { vertex } from '@/three/shader/vertex'
-import { fragment } from '@/three/shader/fragment'
-import Anime from 'animejs/lib/anime.es.js'
+import { vertex } from '@/three/shader-grid/vertex'
+import { fragment } from '@/three/shader-grid/fragment'
+import { RenderTexture } from '@/three/scenes/rtScene'
 
 export type ProgressCb = (v: number) => unknown
 
+export enum Theme {
+    Light = 0,
+    Dark = 1
+}
+
+interface IInitMainScene {
+    _scene: THREE.Scene
+    _camera: THREE.PerspectiveCamera
+    _randomGridTexture: THREE.DataTexture
+    _material: THREE.ShaderMaterial
+    _mesh: THREE.Mesh
+}
+
+interface ICoords {
+    x: number
+    y: number
+}
+
+interface IMouse {
+    cur: ICoords
+    vel: ICoords
+}
+
 export class ThreeBackground {
+    // Main scene
     private _scene!: THREE.Scene
     private _camera!: THREE.PerspectiveCamera
     private _container!: HTMLElement
     private _renderer!: THREE.WebGLRenderer
-    private _windowRatio!: number
+
+    // Render target
+    static readonly RENDER_TARGET_HEIGHT = 576
+    static readonly RENDER_TARGET_WIDTH = 1024
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
+    private readonly _startingTheme!: Theme
 
-    private _textures!: THREE.Texture[]
-    private _uniforms!: { [uniform: string]: IUniform }
+    // Render texture class
+    private _renderTexture!: RenderTexture
 
-    private _animation!: Anime.AnimeInstance
-    private readonly _startProgress!: number
+    // distortion
 
-    private readonly _PROGRESS_CB!: ProgressCb
+    static readonly DISTORTION_STRENGTH = 0.1
+    static readonly DISTORTION_INFLUENCE = 0.2
+    static readonly DISTORTION_GRID_SIZE = 128
+    static readonly DISTORTION_RELAXATION = 0.95
 
-    constructor(container: HTMLElement, progressCb: ProgressCb, startProgress: number) {
-        this._container = container
-        this._PROGRESS_CB = progressCb
-        this._startProgress = startProgress
+    private _randomGridTexture!: THREE.DataTexture
+    private _material!: THREE.ShaderMaterial
+    private _mesh!: THREE.Mesh
+    private _mouse: IMouse = {
+        cur: { x: 0, y: 0 },
+        vel: { x: 0, y: 0 }
     }
 
+    // interactions
+    private readonly _progressCb!: ProgressCb
+
+    constructor(container: HTMLElement, progressCb: ProgressCb, startState: Theme) {
+        this._container = container
+        this._progressCb = progressCb
+        this._startingTheme = startState
+    }
+
+    //#region Textures
+
     private _textureLoaded(index: number) {
-        this._PROGRESS_CB(Math.round((index / this._IMAGES.length) * 100))
+        this._progressCb(Math.round((index / this._IMAGES.length) * 100))
     }
 
     private async _loadTextures(): Promise<THREE.Texture[]> {
@@ -46,141 +88,265 @@ export class ThreeBackground {
             )
         })
         return await Promise.all(promises).then((r) => {
-            this._PROGRESS_CB(100)
+            this._progressCb(100)
             return r
         })
     }
 
-    private _change(v: number): void {
-        const targets = this._uniforms.progress
-        this._animation = Anime({
-            targets,
-            value: v,
-            duration: 1200,
-            easing: 'easeOutSine',
-            autoplay: false
-        })
+    //#endregion
 
-        this._animation.play()
-    }
+    //#region Distortion
 
-    private _updateUniformResolution(width: number, height: number): void {
-        this._uniforms.resolution.value.x = width
-        this._uniforms.resolution.value.y = height
+    private _updateDistortionTexture() {
+        const randomGridData = this._randomGridTexture.image.data
 
-        const textRatio = this._textures[0].image.height / this._textures[0].image.width
-        const aspIsMoreThanText = height / width > textRatio
-
-        this._uniforms.resolution.value.z = aspIsMoreThanText ? (width / height) * textRatio : 1 // a1
-        this._uniforms.resolution.value.w = aspIsMoreThanText ? 1 : height / width / textRatio
-    }
-
-    private createMaterial(): { mat: THREE.ShaderMaterial; uniforms: { [uniform: string]: IUniform } } {
-        const uniforms = {
-            time: { type: 'f', value: 0 },
-            progress: { type: 'f', value: this._startProgress },
-            border: { type: 'f', value: 0 },
-            intensity: { type: 'f', value: 0 },
-            width: { value: 0.5, type: 'f', min: 0, max: 10 },
-            scaleX: { value: 40, type: 'f', min: 0.1, max: 60 },
-            scaleY: { value: 40, type: 'f', min: 0.1, max: 60 },
-            transition: { type: 'f', value: 40 },
-            swipe: { type: 'f', value: 0 },
-            radius: { type: 'f', value: 0 },
-            texture1: { type: 'f', value: this._textures[0] },
-            texture2: { type: 'f', value: this._textures[1] },
-            displacement: { type: 'f', value: this._textures[2] },
-            resolution: { type: 'v4', value: new THREE.Vector4() }
+        // Decrease cell value to reduce distortion
+        for (let i = 0; i < randomGridData.length; i += 4) {
+            randomGridData[i] *= ThreeBackground.DISTORTION_RELAXATION
+            randomGridData[i + 1] *= ThreeBackground.DISTORTION_RELAXATION
         }
-        const mat: THREE.ShaderMaterial = new THREE.ShaderMaterial({
-            uniforms,
-            vertexShader: vertex,
-            fragmentShader: fragment,
-            transparent: true,
-            depthTest: false,
-            side: THREE.DoubleSide
-        })
 
-        return { mat, uniforms }
+        // Convert mouse coords to grid texture coords
+        const gridMouseX = this._mouse.cur.x * ThreeBackground.DISTORTION_GRID_SIZE
+        const gridMouseY = (1 - this._mouse.cur.y) * ThreeBackground.DISTORTION_GRID_SIZE
+        const maxDist = ThreeBackground.DISTORTION_GRID_SIZE * ThreeBackground.DISTORTION_INFLUENCE
+
+        // For each grid distortion increase the value based on the mouse velocity
+        for (let i = 0; i < ThreeBackground.DISTORTION_GRID_SIZE; i++) {
+            for (let j = 0; j < ThreeBackground.DISTORTION_GRID_SIZE; j++) {
+                const dist = Math.sqrt((gridMouseX - i) ** 2 + (gridMouseY - j) ** 2)
+
+                if (dist < maxDist) {
+                    const dataIndex = 4 * (i + ThreeBackground.DISTORTION_GRID_SIZE * j)
+
+                    let power = maxDist / dist
+                    power = Math.max(0, Math.min(power, 20))
+
+                    randomGridData[dataIndex] += 100 * this._mouse.vel.x * power * ThreeBackground.DISTORTION_STRENGTH
+                    randomGridData[dataIndex + 1] -=
+                        100 * this._mouse.vel.y * power * ThreeBackground.DISTORTION_STRENGTH
+                }
+            }
+        }
+
+        // Decrease the mouse velocity
+        this._mouse.vel.x *= ThreeBackground.DISTORTION_RELAXATION
+        this._mouse.vel.y *= ThreeBackground.DISTORTION_RELAXATION
+
+        this._randomGridTexture.needsUpdate = true
+        this._material.uniforms.uDataTexture.value = this._randomGridTexture
     }
 
     /**
-     * Init THREE and scene elements
+     * Creates a random grid texture.
+     *
      * @private
+     * @returns {THREE.DataTexture} The generated random grid texture.
      */
-    private _init() {
-        const planeSize = 1.55
-        const cameraDist = 1
+    private _createRandomGrid(): THREE.DataTexture {
+        const width = ThreeBackground.DISTORTION_GRID_SIZE
+        const height = ThreeBackground.DISTORTION_GRID_SIZE
 
-        const _windowRatio = window.innerWidth / window.innerHeight
-        const _scene: THREE.Scene = new THREE.Scene()
-        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(75, this._windowRatio, 0.1, 1000)
-        _camera.position.z = cameraDist
+        const size = width * height
+        const data = new Float32Array(4 * size)
 
+        for (let i = 0; i < size; i += 1) {
+            const r = Math.random() * 100
+            const g = Math.random() * 100
+
+            const idOffseted = i * 4
+
+            data[idOffseted] = r
+            data[idOffseted + 1] = g
+            data[idOffseted + 2] = r
+            data[idOffseted + 3] = 1
+        }
+
+        const randomTexture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType)
+        randomTexture.magFilter = randomTexture.minFilter = THREE.NearestFilter
+        randomTexture.needsUpdate = true
+        return randomTexture
+    }
+
+    //#endregion
+
+    /**
+     * Initializes the renderer.
+     * @private
+     * @returns {}
+     */
+    private _init(): { _renderer: THREE.WebGLRenderer } {
         const _renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer()
         _renderer.setSize(window.innerWidth, window.innerHeight)
+        return { _renderer }
+    }
+
+    /**
+     * Initializes the main scene and camera.
+     * @param {THREE.RenderTarget} renderTarget - The render target used for the material.
+     * @return { IInitMainScene }
+     */
+    private _initMainScene(renderTarget: THREE.RenderTarget): IInitMainScene {
+        const planeSize = 1
+        const cameraDist = 0.58
+
+        const aspect = window.innerWidth / window.innerHeight
+
+        const _scene: THREE.Scene = new THREE.Scene()
+        const _camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(80, aspect, 0.1, 1000)
+        _camera.position.z = cameraDist
 
         const g = new THREE.PlaneGeometry(planeSize, planeSize)
-        const { mat, uniforms } = this.createMaterial()
-        this._uniforms = uniforms
 
-        const plane = new THREE.Mesh(g, mat)
-        _scene.add(plane)
+        const _randomGridTexture = this._createRandomGrid(aspect)
+        const _material = new THREE.ShaderMaterial({
+            /* extensions: {
+          derivatives: '#extension GL_OES_standard_derivatives : enable'
+      },*/
+            side: THREE.DoubleSide,
+            uniforms: {
+                time: {
+                    value: 0
+                },
+                resolution: {
+                    value: new THREE.Vector4()
+                },
+                uTexture: {
+                    value: renderTarget.texture
+                },
+                uDataTexture: {
+                    value: _randomGridTexture
+                }
+            },
+            vertexShader: vertex,
+            fragmentShader: fragment
+        })
 
-        return { _camera, _renderer, _scene, _windowRatio }
+        const _mesh = new THREE.Mesh(g, _material)
+        _mesh.scale.set(aspect, 1, 1)
+        _scene.add(_mesh)
+
+        const light = new THREE.AmbientLight(0xffffff, 3)
+        _scene.add(light)
+
+        return { _scene, _camera, _randomGridTexture, _material, _mesh }
     }
+
+    //#region Resize
 
     /**
      * Update render and camera to match viewport
      * @private
      */
-    private _setViewPort() {
+    private _resizeUpdate() {
         const width = window.innerWidth
         const height = window.innerHeight
+        const aspect = width / height
+
+        this._mesh.scale.set(aspect, 1, 1)
 
         this._renderer.setSize(width, height)
-        this._camera.aspect = width / height
-        this._camera.fov = Math.atan(width / 2 / this._camera.position.z) * 2 * THREE.MathUtils.RAD2DEG
+        this._camera.aspect = aspect
+        this._camera.updateProjectionMatrix()
 
-        this._updateUniformResolution(width, height)
+        // Set uniform resolution
+        const imageAspect = ThreeBackground.RENDER_TARGET_HEIGHT / ThreeBackground.RENDER_TARGET_WIDTH
+        let a1
+        let a2
+        if (height / width > imageAspect) {
+            a1 = aspect * imageAspect
+            a2 = 1
+        } else {
+            a1 = 1
+            a2 = height / width / imageAspect
+        }
+
+        // Update the shader material
+        this._material.uniforms.resolution.value.x = width
+        this._material.uniforms.resolution.value.y = height
+        this._material.uniforms.resolution.value.z = a1
+        this._material.uniforms.resolution.value.w = a2
+
+        this._material.uniforms.uDataTexture.value = this._createRandomGrid(aspect)
     }
 
     /**
      * Window resize
      * @private
      */
-    private _resize = debounce(this._setViewPort, 50)
+    private _resize = debounce(this._resizeUpdate, 50)
+
+    //#endregion
 
     /**
      * Start render loop
      * @private
      */
-    private _start() {
-        window.requestAnimationFrame(this._start.bind(this))
+    private _renderStep() {
+        window.requestAnimationFrame(this._renderStep.bind(this))
+
+        // Render texture scene
+        this._renderTexture.renderStep(this._renderer)
+
+        // Update distortion
+        this._updateDistortionTexture()
+
+        // Main render step
+        this._renderer.setRenderTarget(null)
         this._renderer.render(this._scene, this._camera)
     }
 
     //#region Public
 
+    /**
+     * Load textures and start the background
+     */
     public start() {
         this._loadTextures().then((r) => {
-            // Store textures
-            this._textures = r
+            // Create render texture instance
+            this._renderTexture = new RenderTexture(r, this._startingTheme)
 
-            // Init scene and store references
+            // Create the main renderer
             Object.assign(this, this._init())
-            this._container.appendChild(this._renderer.domElement)
 
-            this._setViewPort()
+            // Create the main scene
+            Object.assign(this, this._initMainScene(this._renderTexture.target))
+
+            this._resizeUpdate()
             window.addEventListener('resize', this._resize.bind(this))
 
-            // Start rendere loop
-            this._start()
+            this._container.appendChild(this._renderer.domElement)
+
+            // Start rendering loop
+            this._renderStep()
         })
     }
 
-    public change(v: number) {
-        this._change(v)
+    /**
+     * Change theme
+     * @param {Theme} v
+     */
+    public change(v: Theme) {
+        this._renderTexture.setTheme(v)
+    }
+
+    /**
+     * Pointer position update for distortion effect
+     * @param {{ x: number; y: number }} p
+     */
+    public pointerPosition(p: { x: number; y: number }) {
+        const x = p.x / window.innerWidth
+        const y = p.y / window.innerHeight
+        this._mouse.vel = { x: x - this._mouse.cur.x, y: y - this._mouse.cur.y }
+        this._mouse.cur = { x, y }
+    }
+
+    /**
+     * Scroll progression update for cylinder animation
+     * @param v
+     */
+    public scrollProgression(v: number) {
+        this._renderTexture.rotateCylinder(v)
     }
 
     //#endregion

@@ -15,6 +15,8 @@ const { theme, isTouch, isFocused } = storeToRefs(store)
 const loadingProgress = ref<number>(0)
 const loadingStart = ref<boolean>(false)
 const loadingEnd = ref<boolean>(false)
+const scrollProgress = ref<number>(0)
+const dotPosition = ref<{ x: number; y: number }>({ x: 0, y: 0 })
 
 function onWindowBlur() {
     setIsFocused(false)
@@ -46,15 +48,24 @@ watch(theme, (v, p) => {
 </script>
 
 <template>
-    <SBackground :start-loading="loadingStart" @load-progress="(v: number) => (loadingProgress = v)" />
+    <SBackground
+        :start-loading="loadingStart"
+        :scroll-progress="scrollProgress"
+        :pointer-position="dotPosition"
+        @load-progress="(v: number) => (loadingProgress = v)"
+    />
     <SHeader />
-    <MainView :load-end="loadingProgress === 100" :cover-hidden="loadingEnd" />
+    <MainView
+        :load-end="loadingProgress === 100"
+        :cover-hidden="loadingEnd"
+        @scroll-progress="(p: number) => (scrollProgress = p)"
+    />
     <SLoading
         :progress="loadingProgress"
         @loading-start="(v: boolean) => (loadingStart = v)"
         @loading-end="(value: boolean) => (loadingEnd = value)"
     />
-    <UiDot v-if="!isTouch && isFocused" />
+    <UiDot v-if="!isTouch && isFocused" @dot-position="(v) => (dotPosition = v)" />
 </template>
 
 <style scoped></style>
