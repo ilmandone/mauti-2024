@@ -16,7 +16,7 @@ void main()	{
   vec4 deform = texture2D(uDataTexture, vUv);
   
   vec4 finalTexture = texture2D(uTexture, UVCoords - 0.02 * deform.rg);
-  float lightIntensity = abs(deform.r) * 0.035;
+  float lightIntensity = abs(deform.r) * 0.025;
   vec4 finalColorAdded = vec4(finalTexture.r + lightIntensity, finalTexture.g + lightIntensity, finalTexture.b + lightIntensity, 1);
   
   gl_FragColor = mix(finalTexture, finalColorAdded, deform.a);
