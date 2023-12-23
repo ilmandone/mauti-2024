@@ -58,7 +58,7 @@ export class RenderTexture {
             map: this._textures[theme],
             emissive: new THREE.Color(0xffffff),
             emissiveMap: this._textures[theme],
-            emissiveIntensity: theme === 0 ? 1 : 0.2
+            emissiveIntensity: theme === 0 ? 1 : 0.8
         })
 
         const _rtMesh = new THREE.Mesh(g, _rtMaterial)

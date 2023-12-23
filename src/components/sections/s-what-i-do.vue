@@ -77,7 +77,7 @@ onMounted(() => {
     &__svg {
         height: 100%;
 
-        stroke: var(--color-title-special);
+        stroke: var(--color-emphasize);
         stroke-width: 4px;
         stroke-linejoin: round;
         stroke-dasharray: 0 800;

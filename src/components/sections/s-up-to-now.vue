@@ -133,7 +133,7 @@ section.utn {
 
         header:not(.v-hidden) {
             margin-bottom: 1rem;
-            @include typo.body(1.5rem, var(--color-title-special));
+            @include typo.body(1.5rem, var(--color-emphasize));
         }
 
         ul {
