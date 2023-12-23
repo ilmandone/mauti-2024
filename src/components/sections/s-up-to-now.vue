@@ -100,7 +100,7 @@ section.utn {
     .utn__svg {
         width: 100%;
 
-        stroke: var(--color-emphasize);
+        stroke: var(--color-title-special);
         stroke-width: 4px;
         stroke-linejoin: round;
         stroke-dasharray: 0 800;
@@ -133,7 +133,7 @@ section.utn {
 
         header:not(.v-hidden) {
             margin-bottom: 1rem;
-            @include typo.body(1.5rem, var(--color-emphasize));
+            @include typo.body(1.5rem, var(--color-title-special));
         }
 
         ul {

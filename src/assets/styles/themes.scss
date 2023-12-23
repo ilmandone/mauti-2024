@@ -4,11 +4,12 @@
     --color-bg: #{vars.$color-l-bg};
     --color-emphasize: #{vars.$color-l-emphasize};
     --color-main: #{vars.$color-l-main};
+    --color-title-special: #{vars.$color-l-bg};
 }
 
 body.t-dark {
     --color-bg: #{vars.$color-d-bg};
-    --color-emphasize: #{vars.$color-d-emphasize}
-;
+    --color-emphasize: #{vars.$color-d-emphasize};
     --color-main: #{vars.$color-d-main};
+    --color-title-special: #{vars.$color-d-emphasize};
 }
