@@ -10,11 +10,11 @@ interface IInitRTScene {
 }
 
 export class RenderTexture {
-    static readonly RENDER_TARGET_HEIGHT = 810 // 576
-    static readonly RENDER_TARGET_WIDTH = 1440 // 1024
-    static readonly CYLINDER_RADIUS = 0.55
-    static readonly CYLINDER_HEIGHT = 3.6 // 0.D
-    static readonly CAMERA_DISTANCE = 6
+    static readonly RENDER_TARGET_HEIGHT = 1080 // 576
+    static readonly RENDER_TARGET_WIDTH = 1920 // 1024
+    static readonly CYLINDER_RADIUS = 0.3
+    static readonly CYLINDER_HEIGHT = 2 // 0.D
+    static readonly CAMERA_DISTANCE = 12
 
     private readonly _textures!: THREE.Texture[]
     private readonly _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
@@ -50,7 +50,7 @@ export class RenderTexture {
         const _rtScene: THREE.Scene = new THREE.Scene()
         _rtScene.background = new THREE.Color('red')
 
-        const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
+        const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(2.8, 1.8, 0.1, 1000)
         _rtCamera.position.z = RenderTexture.CAMERA_DISTANCE
 
         const g = new THREE.CylinderGeometry(

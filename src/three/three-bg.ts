@@ -200,9 +200,9 @@ export class ThreeBackground {
 
         const _randomGridTexture = this._createRandomGrid()
         const _material = new THREE.ShaderMaterial({
-            /* extensions: {
-          derivatives: '#extension GL_OES_standard_derivatives : enable'
-      },*/
+            /*extensions: {
+                derivatives: '#extension GL_OES_standard_derivatives : enable'
+            },*/
             side: THREE.DoubleSide,
             uniforms: {
                 time: {
