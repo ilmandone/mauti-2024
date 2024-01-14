@@ -37,8 +37,8 @@ export class ThreeBackground {
     private _renderer!: THREE.WebGLRenderer
 
     // Render target
-    static readonly RENDER_TARGET_HEIGHT = 576
-    static readonly RENDER_TARGET_WIDTH = 1024
+    static readonly RENDER_TARGET_HEIGHT = 810
+    static readonly RENDER_TARGET_WIDTH = 1440
 
     private readonly _IMAGES: string[] = ['./img/bg-light.jpg', './img/bg-dark.jpg', './img/disp1.jpg']
     private readonly _startingTheme!: Theme

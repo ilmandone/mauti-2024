@@ -12,8 +12,9 @@ interface IInitRTScene {
 export class RenderTexture {
     static readonly RENDER_TARGET_HEIGHT = 810 // 576
     static readonly RENDER_TARGET_WIDTH = 1440 // 1024
-    static readonly CYLINDER_RADIUS = 0.5
-    static readonly CAMERA_DISTANCE = 5.8
+    static readonly CYLINDER_RADIUS = 0.55
+    static readonly CYLINDER_HEIGHT = 3.6 // 0.D
+    static readonly CAMERA_DISTANCE = 6
 
     private readonly _textures!: THREE.Texture[]
     private readonly _renderTarget!: THREE.WebGLRenderTarget<THREE.Texture>
@@ -52,7 +53,12 @@ export class RenderTexture {
         const _rtCamera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(10, 1.8, 0.1, 1000)
         _rtCamera.position.z = RenderTexture.CAMERA_DISTANCE
 
-        const g = new THREE.CylinderGeometry(RenderTexture.CYLINDER_RADIUS, RenderTexture.CYLINDER_RADIUS, 3, 32)
+        const g = new THREE.CylinderGeometry(
+            RenderTexture.CYLINDER_RADIUS,
+            RenderTexture.CYLINDER_RADIUS,
+            RenderTexture.CYLINDER_HEIGHT,
+            32
+        )
 
         const _rtMaterial = new THREE.MeshStandardMaterial({
             map: this._textures[theme],
